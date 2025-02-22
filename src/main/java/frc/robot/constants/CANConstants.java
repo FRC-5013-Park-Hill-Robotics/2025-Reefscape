@@ -29,5 +29,9 @@ public final class CANConstants {
     public static final int ELEVATOR_LEFT_ID = 0;
     public static final int ELEVATOR_RIGHT_ID = 0;
 
+    public static final int INTAKE_WRIST_ID = 0;
+    public static final int INTAKE_ROLLER_ID = 0;
 
+    public static final int ELEVATOR_LEFT_ENCODER_DIO = 0;
+    public static final int ELEVATOR_RIGHT_ENCODER_DIO = 0;
 }

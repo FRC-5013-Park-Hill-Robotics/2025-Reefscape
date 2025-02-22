@@ -3,7 +3,7 @@ package frc.robot.trobot5013lib;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+/*import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 public class SwerveVoltageRequest implements SwerveRequest {
@@ -49,8 +49,8 @@ public class SwerveVoltageRequest implements SwerveRequest {
      * @param targetVoltage Voltage for all modules to target
      * @return 
      */
-    public SwerveVoltageRequest withVoltage(double targetVoltage) {
+    /*public SwerveVoltageRequest withVoltage(double targetVoltage) {
         this.m_targetVoltage = targetVoltage;
         return this;
     }
-}
+}*/
