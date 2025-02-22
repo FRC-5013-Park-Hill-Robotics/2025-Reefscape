@@ -16,7 +16,6 @@ public class RevThroughBoreEncoder {
     public RevThroughBoreEncoder(int dioChannel){
         m_dutyCycleEncoder = new DutyCycleEncoder(dioChannel);
         m_dutyCycleEncoder.setDutyCycleRange(1.0/1024.0, 1023.0/1024.0);
-        m_dutyCycleEncoder.setDistancePerRotation(360);
     }
 
     public RevThroughBoreEncoder (int dioChannel, boolean inverted, double offset){
@@ -45,8 +44,17 @@ public class RevThroughBoreEncoder {
         return (m_dutyCycleEncoder.isConnected());
     }
 
+    public double getAngleRaw(){
+        if(m_Inverted){
+            return -m_dutyCycleEncoder.get();
+        }   
+        else{
+            return m_dutyCycleEncoder.get();
+        }
+    }
+    
     public Rotation2d getAngle(){
-        double angle = m_dutyCycleEncoder.getDistance() % 360;
+        double angle = m_dutyCycleEncoder.get();
           
         angle -= m_offset.getDegrees();
      
@@ -59,7 +67,6 @@ public class RevThroughBoreEncoder {
         }
 
         return Rotation2d.fromDegrees(angle % 360);
-
     }
 
 }

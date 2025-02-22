@@ -9,14 +9,13 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.playingwithfusion.TimeOfFlight;
 
 //import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +28,6 @@ import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.MutableMeasure.mutable;
 
 public class IntakeRollers extends SubsystemBase {
 
@@ -37,7 +35,6 @@ public class IntakeRollers extends SubsystemBase {
     private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID);
     private double target = 0;
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
-    private TimeOfFlight m_timeOfFlight = new TimeOfFlight(IntakeConstants.TIME_OF_FLIGHT_CAN_ID);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
     private double ampTarget = IntakeConstants.kAmpOut;
 
@@ -52,7 +49,6 @@ public class IntakeRollers extends SubsystemBase {
         config.Slot0.kV = IntakeConstants.RollerGains.kV;
         config.Slot0.kA = IntakeConstants.RollerGains.kA;
         config.CurrentLimits.StatorCurrentLimit = 40;
-        config.CurrentLimits.SupplyTimeThreshold = 0.25;
         intakeRollerMotor.getConfigurator().apply(config);
         intakeRollerMotor.set(0);
         m_VelocityVoltage.withSlot(0);
@@ -69,14 +65,6 @@ public class IntakeRollers extends SubsystemBase {
     public void stop() {
         target = 0;
     }
-
-    public boolean hasGamePiece(){
-        return m_timeOfFlight.getRange() < IntakeConstants.TIME_OF_FLIGHT_RANGE_MM;
-    }
-
-    public boolean doesntHaveGamePiece(){
-        return !hasGamePiece();
-    } 
 
     public void setTarget(double targetSpeed){
         target = targetSpeed;
@@ -100,26 +88,13 @@ public class IntakeRollers extends SubsystemBase {
     public void periodic() {
         m_VelocityVoltage.withVelocity(target);
         intakeRollerMotor.setControl(m_VelocityVoltage);
-        SmartDashboard.putNumber("ToF", m_timeOfFlight.getRange());
-        SmartDashboard.putBoolean("hasGamePiece", this.hasGamePiece());
         SmartDashboard.putNumber("Intake Roller Speed",ampTarget);
-
     }
 
-    public Command intakeGamepieceCommand(){
-        Command result = run(this::feedIn).until(this::hasGamePiece).andThen(runOnce(this::stop));
-        return result;
-    } 
-    
     public Command takeIn(){
         Command result = runOnce(this::feedIn);
         return result;
-    } 
-
-    public Command throwOut(){
-        Command result = run(this::feedOut).until(this::doesntHaveGamePiece).andThen(this.stopC());
-        return result;
-    } 
+    }
 
     public Command throwOutManual(){
         Command result = runOnce(this::feedOut);
@@ -135,41 +110,42 @@ public class IntakeRollers extends SubsystemBase {
         return run(this::ampOut).withTimeout(0.2).andThen(stopC());
     }
 
+    /*
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  // Mutable holder for unit-safe rotational distance values, persisted to avoid
-  // reallocation.
-  private final MutableMeasure<Angle> m_rotation = mutable(Rotations.of(0));
-  // Mutable holder for unit-safe rotational  velocity values, persisted to avoid
-  // reallocation.
-  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
-  private final VoltageOut m_voltageOut = new VoltageOut(0);
-  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-      // Using amperage, since it is converted when it comes out it ok.  Config expecst type volts.
-      new SysIdRoutine.Config(Volts.of(1).per(Seconds.of(1)), Volts.of(7), null, null),
-      new SysIdRoutine.Mechanism(
-          // Tell SysId how to plumb the driving voltage to the motors.
-          (Measure<Voltage> volts) -> {
-            intakeRollerMotor.setControl(m_voltageOut.withOutput(volts.in(Volts)));
-          },
-          // Tell SysId how to record a frame of data for each motor on the mechanism
-          // being
-          // characterized.
-          log -> {
-            // Record a frame for the wheel motor.
-            log.motor("wheel")
-                .voltage(
-                    m_appliedVoltage.mut_replace(
-                        intakeRollerMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                .angularPosition(m_rotation.mut_replace(intakeRollerMotor.getPosition().getValueAsDouble(), Rotations))
-                .angularVelocity(
-                    m_velocity.mut_replace(intakeRollerMotor.getVelocity().getValueAsDouble(), RotationsPerSecond));
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    // Mutable holder for unit-safe rotational distance values, persisted to avoid
+    // reallocation.
+    private final MutableMeasure<Angle> m_rotation = mutable(Rotations.of(0));
+    // Mutable holder for unit-safe rotational  velocity values, persisted to avoid
+    // reallocation.
+    private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+    private final VoltageOut m_voltageOut = new VoltageOut(0);
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+        // Using amperage, since it is converted when it comes out it ok.  Config expecst type volts.
+        new SysIdRoutine.Config(Volts.of(1).per(Seconds.of(1)), Volts.of(7), null, null),
+        new SysIdRoutine.Mechanism(
+            // Tell SysId how to plumb the driving voltage to the motors.
+            (Measure<Voltage> volts) -> {
+                intakeRollerMotor.setControl(m_voltageOut.withOutput(volts.in(Volts)));
+            },
+            // Tell SysId how to record a frame of data for each motor on the mechanism
+            // being
+            // characterized.
+            log -> {
+                // Record a frame for the wheel motor.
+                log.motor("wheel")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            intakeRollerMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .angularPosition(m_rotation.mut_replace(intakeRollerMotor.getPosition().getValueAsDouble(), Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(intakeRollerMotor.getVelocity().getValueAsDouble(), RotationsPerSecond));
 
-          },
-          // Tell SysId to make generated commands require this subsystem, suffix test
-          // state in
-          // WPILog with this subsystem's name ("LauncherRollers")
-          this));
+            },
+            // Tell SysId to make generated commands require this subsystem, suffix test
+            // state in
+            // WPILog with this subsystem's name ("LauncherRollers")
+            this));
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutine.quasistatic(direction);
@@ -177,6 +153,6 @@ public class IntakeRollers extends SubsystemBase {
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutine.dynamic(direction);
-  }
+  }*/
    
 }
