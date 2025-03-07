@@ -6,7 +6,8 @@ package frc.robot.constants;
 
 /** Add your docs here. */
 public final class CANConstants {
-    public static final String CANIVORE_NAME = "Canivore";
+    public static final String CANBUS_DRIVE = "Canivore";
+    public static final String CANBUS_ELEVATOR = "Elevator";
     
     //a value of 0 represents that the variable has not been worked on
 
@@ -26,12 +27,14 @@ public final class CANConstants {
     public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 12;
     public static final int BACK_RIGHT_ENCODER_ID = 13;
 
-    public static final int ELEVATOR_LEFT_ID = 0;
-    public static final int ELEVATOR_RIGHT_ID = 0;
+    public static final int ELEVATOR_LEFT_ID = 30;
+    public static final int ELEVATOR_RIGHT_ID = 31;
 
     public static final int INTAKE_WRIST_ID = 0;
     public static final int INTAKE_ROLLER_ID = 0;
 
     public static final int ELEVATOR_LEFT_ENCODER_DIO = 0;
-    public static final int ELEVATOR_RIGHT_ENCODER_DIO = 0;
+    public static final int ELEVATOR_RIGHT_ENCODER_DIO = 1;
+
+    public static final int WRIST_ENCODER_DIO = 0;
 }
