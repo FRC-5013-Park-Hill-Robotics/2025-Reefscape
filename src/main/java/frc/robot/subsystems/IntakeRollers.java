@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
 
 
@@ -32,14 +33,14 @@ import static edu.wpi.first.units.Units.Seconds;
 public class IntakeRollers extends SubsystemBase {
 
     // TODO Create motor controller of type TalonFx using the can constants for the id
-    private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID);
+    private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
     private double target = 0;
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
     private double ampTarget = IntakeConstants.kAmpOut;
 
-
     public IntakeRollers() {
+        super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.Slot0.kP = IntakeConstants.RollerGains.kP;
@@ -54,12 +55,11 @@ public class IntakeRollers extends SubsystemBase {
         m_VelocityVoltage.withSlot(0);
     }
 
-    public void feedIn() {
-        target = IntakeConstants.kIntakeRotation;     
-    }
-
-    public void feedOut() {
-        target = IntakeConstants.kOuttakeRotation;
+    @Override
+    public void periodic() {
+        m_VelocityVoltage.withVelocity(target);
+        //intakeRollerMotor.setControl(m_VelocityVoltage);
+        SmartDashboard.putNumber("Intake Roller Speed", m_VelocityVoltage.Velocity);
     }
 
     public void stop() {
@@ -70,45 +70,32 @@ public class IntakeRollers extends SubsystemBase {
         target = targetSpeed;
     }
 
-    public void ampOut(){
-        setTarget(this.ampTarget);
-    }
-
     public void incrementRollers(double rotationChange) {
         this.ampTarget += rotationChange;
     
-      }
-    
-    public Command incrementRollersCommand(double rotationChange){
-        Command result = runOnce(()-> incrementRollers(rotationChange));
-        return result;
-      } 
-    
-    @Override
-    public void periodic() {
-        m_VelocityVoltage.withVelocity(target);
-        intakeRollerMotor.setControl(m_VelocityVoltage);
-        SmartDashboard.putNumber("Intake Roller Speed",ampTarget);
     }
 
-    public Command takeIn(){
-        Command result = runOnce(this::feedIn);
-        return result;
+    public Boolean hasGamepiece() {
+        if(intakeRollerMotor.getSupplyCurrent(true).getValueAsDouble() > 10){
+            return true;
+        }
+        return false;
     }
-
-    public Command throwOutManual(){
-        Command result = runOnce(this::feedOut);
-        return result;
-    } 
-
+    
     public Command stopC(){
         Command result = runOnce(this::stop);
         return result;
     }
-    
-    public Command ampOutCommand(){
-        return run(this::ampOut).withTimeout(0.2).andThen(stopC());
+
+    public Command setTargetC(double targetSpeed){
+        Command result = runOnce(() -> setTarget(targetSpeed));
+        return result;
     }
+
+    public Command incrementRollersC(double rotationChange){
+        Command result = runOnce(()-> incrementRollers(rotationChange));
+        return result;
+    } 
 
     /*
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.

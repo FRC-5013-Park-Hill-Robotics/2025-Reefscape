@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotContainer;
+import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.trobot5013lib.CANCoderWrapper;
 import frc.robot.trobot5013lib.RevThroughBoreEncoder;
@@ -43,9 +44,12 @@ import static edu.wpi.first.units.Units.Volts;
 
 public class IntakeWrist extends SubsystemBase {
 
-    private final TalonFX intakeWristMotor = new TalonFX(IntakeConstants.INTAKE_WRIST_MOTOR_CAN_ID);
+    private final TalonFX intakeWristMotor = new TalonFX(CANConstants.INTAKE_WRIST_ID, CANConstants.CANBUS_ELEVATOR);
     
-    public double setpointRadians = 0;
+    private final RevThroughBoreEncoder encoderLeft = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO);
+
+    public double setpointDegrees = 0;
+
     private ArmFeedforward feedforward = new ArmFeedforward(
             IntakeConstants.RotationGains.kS,
             IntakeConstants.RotationGains.kG,
@@ -59,28 +63,21 @@ public class IntakeWrist extends SubsystemBase {
             IntakeConstants.RotationGains.kD,
             wristConstraints);
     private final VoltageOut wristVoltageOut = new VoltageOut(0);
+
     private double lastSpeed = 0;
     private double lastTime = 0;
 
-    private Debouncer mDebouncer = new Debouncer(0.1);
-    private Timer mTimer = new Timer();
+    private boolean stop = false;
 
-    private boolean stop = true;
-    private IntakeRollers m_intakeRollers;
-
-    /** Creates a new IntakeShoulder. */
-    public IntakeWrist(IntakeRollers intakeRollers) {
+    /** Creates a new IntakeWrist. */
+    public IntakeWrist() {
         super();
-        this.m_intakeRollers = intakeRollers;
-
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         intakeWristMotor.getConfigurator().apply(config);
         wristController.setTolerance(IntakeConstants.RotationGains.kPositionTolerance.getRadians(), 0.01);
         wristController.enableContinuousInput(0, 2 * Math.PI);
-
-        mTimer.reset();
     }
 
     @Override
@@ -88,19 +85,29 @@ public class IntakeWrist extends SubsystemBase {
         if (this.stop == true) {
             intakeWristMotor.setControl(wristVoltageOut.withOutput(0));
         } else {
+            double output = wristController.calculate(encoderLeft.getAngle().getDegrees(), setpointDegrees);
+            double acceleration = (wristController.getSetpoint().velocity - lastSpeed)
+                    / (Timer.getFPGATimestamp() - lastTime);
+            double feedforwardVal = feedforward.calculate(encoderLeft.getAngle().getRadians(),
+                    wristController.getSetpoint().velocity, acceleration);
+
+            SmartDashboard.putNumber("Wrist Power", output);
+            SmartDashboard.putNumber("Wrist FF", feedforwardVal);
+            SmartDashboard.putNumber("Wrist Combined", MathUtil.clamp(output + feedforwardVal, -12.0, 12.0));
             //intakeWristMotor
-            //        .setControl(wristVoltageOut.withOutput(MathUtil.clamp(pidVal + feedforwardVal, -12.0, 12.0)));
+            //        .setControl(wristVoltageOut.withOutput(MathUtil.clamp(output + feedforwardVal, -12.0, 12.0)));
             lastSpeed = wristController.getSetpoint().velocity;
             lastTime = Timer.getFPGATimestamp();
         }
     }
 
-   
-
     public void stop() {
         this.stop = true;
     }
 
+    public void setPosition(double setpoint){
+        setpointDegrees = setpoint;
+    }
 
 
     /*
