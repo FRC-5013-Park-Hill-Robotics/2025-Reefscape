@@ -30,11 +30,11 @@ public final class CANConstants {
     public static final int ELEVATOR_LEFT_ID = 30;
     public static final int ELEVATOR_RIGHT_ID = 31;
 
-    public static final int INTAKE_WRIST_ID = 0;
-    public static final int INTAKE_ROLLER_ID = 0;
+    public static final int INTAKE_ROLLER_ID = 32;
+    public static final int INTAKE_WRIST_ID = 33;
 
     public static final int ELEVATOR_LEFT_ENCODER_DIO = 0;
-    public static final int ELEVATOR_RIGHT_ENCODER_DIO = 1;
+    public static final int ELEVATOR_RIGHT_ENCODER_DIO = 0;
 
-    public static final int WRIST_ENCODER_DIO = 0;
+    public static final int WRIST_ENCODER_DIO = 1;
 }

@@ -20,11 +20,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.GamepadDrive;
+import frc.robot.commands.GoBack;
 import frc.robot.commands.PoseCommandFactory;
+import frc.robot.commands.goToClosestPose;
 import frc.robot.commands.goToPose;
+import frc.robot.constants.ElevatorWristSetpoints;
+import frc.robot.constants.FieldPositions;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.IntakeRollers;
+import frc.robot.subsystems.IntakeWrist;
+import frc.robot.subsystems.LimeLight;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -45,14 +54,16 @@ public class RobotContainer {
     private final CommandXboxController mJoystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain mDrivetrain = TunerConstants.createDrivetrain();
-
-    //public final Elevator mElevator = new Elevator();
+   
+    public final IntakeWrist mIntakeWrist = new IntakeWrist();
+    public final IntakeRollers mIntakeRollers = new IntakeRollers();
+    public final Elevator mElevator = new Elevator();
 
     private Field2d m_field = new Field2d();
 
     //Front false by default for auto, enabled in teleop
-    //public final LimeLight frontLimeLight = new LimeLight("limelight-front", true);
-    //public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
+    public final LimeLight frontLimeLight = new LimeLight("limelight-front", true);
+    public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -72,24 +83,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        mDrivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            mDrivetrain.applyRequest(() ->
-                drive.withVelocityX(-mJoystick.getLeftY() * MaxSpeed * mJoystick.getRightTriggerAxis()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-mJoystick.getLeftX() * MaxSpeed * mJoystick.getRightTriggerAxis()) // Drive left with negative X (left)
-                    .withRotationalRate(-mJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
-
-        mJoystick.a().whileTrue(mDrivetrain.applyRequest(() -> brake));
-        mJoystick.b().whileTrue(mDrivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-mJoystick.getLeftY(), -mJoystick.getLeftX()))
-        ));
-
-        //mJoystick.x().onTrue(getAutonomousCommand().onlyWhile(new InstantCommand));
-
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         // mJoystick.back().and(mJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -97,21 +90,60 @@ public class RobotContainer {
         // mJoystick.start().and(mJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // mJoystick.start().and(mJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        //mJoystick.leftBumper().whileTrue(mPoseCommandFactory.goToClosestReefPose(true));
-        //mJoystick.rightBumper().whileTrue(mPoseCommandFactory.goToClosestReefPose(true));
-        mJoystick.leftBumper().whileTrue(new goToPose(new Pose2d(0,0,new Rotation2d(Math.toRadians(0)))));
-        mJoystick.rightBumper().whileTrue(new goToPose(new Pose2d(1,1,new Rotation2d(Math.toRadians(180)))));
+        // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        // mDrivetrain.setDefaultCommand(
+        //     // Drivetrain will execute this command periodically
+        //     mDrivetrain.applyRequest(() ->
+        //         drive.withVelocityX(-mJoystick.getLeftY() * MaxSpeed * mJoystick.getRightTriggerAxis()*((mJoystick.getLeftTriggerAxis()>0.5)?0.5:1)) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-mJoystick.getLeftX() * MaxSpeed * mJoystick.getRightTriggerAxis()*((mJoystick.getLeftTriggerAxis()>0.5)?0.5:1)) // Drive left with negative X (left)
+        //             .withRotationalRate(-mJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
+
+        mDrivetrain.setDefaultCommand(new GamepadDrive(mJoystick));
+
+        //mJoystick.leftBumper().whileTrue(new goToClosestPose(FieldPositions.Left));
+        //mJoystick.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Right));
 
         // reset the field-centric heading on left bumper press
         mJoystick.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
 
-        /*mJoystick.a().onFalse(mElevator.setPosC(1));
-        mJoystick.b().onFalse(mElevator.setPosC(-1));
-        mJoystick.y().onFalse(mElevator.setPosC(-60));
-        mJoystick.x().onFalse(mElevator.setPosC(-80));
+        mJoystick.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
+        mJoystick.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));//.onlyIf(mElevator::atPos)));
+        mJoystick.y().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        // mJoystick.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
+        
+        mJoystick.b().whileTrue(new GoBack(1));
 
-        mJoystick.povUp().onTrue(mElevator.incrementPosC(-10));
-        mJoystick.povDown().onTrue(mElevator.incrementPosC(10));*/
+        mJoystick.leftBumper().onTrue(mIntakeRollers.autoIntakeCoralC())
+                            .onFalse(mIntakeRollers.setTargetC(0));
+        //mJoystick.povUp().onTrue(mIntakeRollers.autoIntakeAlgaeC());
+        mJoystick.rightBumper().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
+                            .onFalse(mIntakeRollers.setTargetC(0));
+
+        // mJoystick.povDown().onTrue(mElevator.zeroC());
+
+        // mJoystick.x().onTrue(mIntakeRollers.autoIntakeCoralC())
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // mJoystick.y().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // // mJoystick.a().onTrue(mIntakeRollers.setTargetC(-IntakeConstants.OutakeSpeed))
+        // //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // mJoystick.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
+        //                      .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        
+        // mJoystick.b().onFalse(mIntakeWrist.setPosC(0));
+
+        mJoystick.povUp().onTrue(mElevator.incrementPosC(-2));
+        mJoystick.povDown().onTrue(mElevator.incrementPosC(2));
+
+        mJoystick.povLeft().onTrue(mIntakeWrist.incrementPosC(-2));
+        mJoystick.povRight().onTrue(mIntakeWrist.incrementPosC(2));
 
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -129,6 +161,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("BotY", mDrivetrain.getState().Pose.getY());
         SmartDashboard.putNumber("BotH", mDrivetrain.getState().Pose.getRotation().getDegrees());
     }
+
     public static RobotContainer getInstance(){
 		return instance;
 	}
@@ -137,11 +170,11 @@ public class RobotContainer {
         return mDrivetrain;
     }
 
-    // public LimeLight getFrontLimeLight(){
-    //     return frontLimeLight;
-    // }
+    public LimeLight getFrontLimeLight(){
+        return frontLimeLight;
+    }
 
-    // public LimeLight getBackLimeLight(){
-    //     return backLimeLight;
-    // }
+    public LimeLight getBackLimeLight(){
+        return backLimeLight;
+    }
 }

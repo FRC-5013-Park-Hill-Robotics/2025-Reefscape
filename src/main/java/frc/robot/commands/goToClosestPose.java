@@ -4,22 +4,24 @@
 
 package frc.robot.commands;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.FieldPositions;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class goToPose extends Command {
+public class goToClosestPose extends Command {
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(DriveConstants.MaxAngularRate * 0.1) // Add a 10% deadband
@@ -27,26 +29,26 @@ public class goToPose extends Command {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final PIDController ControllerX = new PIDController(50, 0, 0);
-  private final PIDController ControllerY = new PIDController(50, 0, 0);
+  private final PIDController ControllerX = new PIDController(40, 0, 1.5);
+  private final PIDController ControllerY = new PIDController(40, 0, 1.5);
   private final PIDController ControllerH = new PIDController(0.15, 0, 0);
   
-  private final SlewRateLimiter LimiterX = new SlewRateLimiter(DriveConstants.movementLimitAmount);
-  private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
-
   private CommandSwerveDrivetrain m_drivetrain;
 
+  private List<Pose2d> mArrayList;
   private Pose2d mTarget;
 
-  /** Creates a new goToPose. */
-  public goToPose(Pose2d target) {
+  /** Creates a new goToClosestPose. */
+  public goToClosestPose(List<Pose2d> target) {
     m_drivetrain = RobotContainer.getInstance().getDrivetrain();
-    mTarget = target;
+    mArrayList = target;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    mTarget = m_drivetrain.getState().Pose.nearest(mArrayList);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -59,9 +61,10 @@ public class goToPose extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed, DriveConstants.MaxSpeed));
-    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed, DriveConstants.MaxSpeed));
-    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate, DriveConstants.MaxAngularRate);
+    double i = 1;
+    double OutputX = MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i);
+    double OutputY = MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i);
+    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*i, DriveConstants.MaxAngularRate*i);
 
     SmartDashboard.putNumber("PoseOutputX", OutputX);
     SmartDashboard.putNumber("PoseOutputY", OutputY);

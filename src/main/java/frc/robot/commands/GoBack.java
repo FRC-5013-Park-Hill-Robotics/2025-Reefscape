@@ -5,6 +5,9 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import java.util.concurrent.TransferQueue;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
@@ -19,8 +22,7 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class goToPose extends Command {
-
+public class GoBack extends Command {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(DriveConstants.MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -30,23 +32,34 @@ public class goToPose extends Command {
   private final PIDController ControllerX = new PIDController(50, 0, 0);
   private final PIDController ControllerY = new PIDController(50, 0, 0);
   private final PIDController ControllerH = new PIDController(0.15, 0, 0);
-  
+
   private final SlewRateLimiter LimiterX = new SlewRateLimiter(DriveConstants.movementLimitAmount);
   private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
-
+  
   private CommandSwerveDrivetrain m_drivetrain;
 
   private Pose2d mTarget;
+  private double mDistance;
 
-  /** Creates a new goToPose. */
-  public goToPose(Pose2d target) {
+  /** Creates a new GoBack. */
+  public GoBack(double distance) {
     m_drivetrain = RobotContainer.getInstance().getDrivetrain();
-    mTarget = target;
+    mDistance = distance;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    Pose2d current = m_drivetrain.getState().Pose;
+    
+    double x = current.getX()-current.getRotation().getCos()*mDistance;
+    double y = current.getY()-current.getRotation().getSin()*mDistance;
+    Rotation2d h = current.getRotation();
+    mTarget = new Pose2d(x,y,h);
+    SmartDashboard.putNumber("PoseGoalX", x);
+    SmartDashboard.putNumber("PoseGoalY", y);
+    SmartDashboard.putNumber("PoseGoalH", h.getDegrees());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -54,7 +67,7 @@ public class goToPose extends Command {
     double ErrorX = m_drivetrain.getState().Pose.getX() - mTarget.getX();
     double ErrorY = m_drivetrain.getState().Pose.getY() - mTarget.getY();
     double ErrorH = m_drivetrain.getState().Pose.getRotation().minus(mTarget.getRotation()).getDegrees();
-
+    
     SmartDashboard.putNumber("PoseErrorX", ErrorX);
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);

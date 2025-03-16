@@ -10,12 +10,14 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
-
+import frc.robot.trobot5013lib.AverageOverTime;
 
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
@@ -35,9 +37,11 @@ public class IntakeRollers extends SubsystemBase {
     // TODO Create motor controller of type TalonFx using the can constants for the id
     private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
     private double target = 0;
+    private SlewRateLimiter limiter = new SlewRateLimiter(400);
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
-    private double ampTarget = IntakeConstants.kAmpOut;
+    private AverageOverTime mCurrentAvgCoral = new AverageOverTime(0.5, 5);
+    private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.5, 5);
 
     public IntakeRollers() {
         super();
@@ -57,9 +61,16 @@ public class IntakeRollers extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_VelocityVoltage.withVelocity(target);
-        //intakeRollerMotor.setControl(m_VelocityVoltage);
+        m_VelocityVoltage.withVelocity(limiter.calculate(target));
+        intakeRollerMotor.setControl(m_VelocityVoltage);
         SmartDashboard.putNumber("Intake Roller Speed", m_VelocityVoltage.Velocity);
+        SmartDashboard.putNumber("Intake Roller Amp", intakeRollerMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake Roller Timestamp", intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
+
+        mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
+        mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
+        SmartDashboard.putNumber("Intake Avg", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
+        SmartDashboard.putBoolean("Intake HasGamepiece", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar);
     }
 
     public void stop() {
@@ -70,13 +81,19 @@ public class IntakeRollers extends SubsystemBase {
         target = targetSpeed;
     }
 
-    public void incrementRollers(double rotationChange) {
-        this.ampTarget += rotationChange;
-    
+    public void incrementRollers(double amount){
+        target += amount;
     }
 
-    public Boolean hasGamepiece() {
-        if(intakeRollerMotor.getSupplyCurrent(true).getValueAsDouble() > 10){
+    public Boolean hasCoral() {
+        if(mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar){
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean hasAlgae() {
+        if(mCurrentAvgAlgae.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.hasAlgaeBar){
             return true;
         }
         return false;
@@ -85,6 +102,18 @@ public class IntakeRollers extends SubsystemBase {
     public Command stopC(){
         Command result = runOnce(this::stop);
         return result;
+    }
+
+    public Command autoIntakeCoralC(){
+        return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
+                .until(this::hasCoral)
+                .andThen(() -> setTarget(0));
+    }
+
+    public Command autoIntakeAlgaeC(){
+        return run(() -> setTarget(IntakeConstants.IntakeAlgaeSpeed))
+                .until(this::hasAlgae)
+                .andThen(() -> setTarget(IntakeConstants.HoldAlgaeSpeed));
     }
 
     public Command setTargetC(double targetSpeed){
