@@ -10,19 +10,22 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
-
+import frc.robot.trobot5013lib.AverageOverTime;
 
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
@@ -32,14 +35,16 @@ import static edu.wpi.first.units.Units.Seconds;
 public class IntakeRollers extends SubsystemBase {
 
     // TODO Create motor controller of type TalonFx using the can constants for the id
-    private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID);
+    private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
     private double target = 0;
+    private SlewRateLimiter limiter = new SlewRateLimiter(400);
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
-    private double ampTarget = IntakeConstants.kAmpOut;
-
+    private AverageOverTime mCurrentAvgCoral = new AverageOverTime(0.5, 5);
+    private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.5, 5);
 
     public IntakeRollers() {
+        super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.Slot0.kP = IntakeConstants.RollerGains.kP;
@@ -54,12 +59,18 @@ public class IntakeRollers extends SubsystemBase {
         m_VelocityVoltage.withSlot(0);
     }
 
-    public void feedIn() {
-        target = IntakeConstants.kIntakeRotation;     
-    }
+    @Override
+    public void periodic() {
+        m_VelocityVoltage.withVelocity(limiter.calculate(target));
+        intakeRollerMotor.setControl(m_VelocityVoltage);
+        SmartDashboard.putNumber("Intake Roller Speed", m_VelocityVoltage.Velocity);
+        SmartDashboard.putNumber("Intake Roller Amp", intakeRollerMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake Roller Timestamp", intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
 
-    public void feedOut() {
-        target = IntakeConstants.kOuttakeRotation;
+        mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
+        mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
+        SmartDashboard.putNumber("Intake Avg", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
+        SmartDashboard.putBoolean("Intake HasGamepiece", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar);
     }
 
     public void stop() {
@@ -70,45 +81,50 @@ public class IntakeRollers extends SubsystemBase {
         target = targetSpeed;
     }
 
-    public void ampOut(){
-        setTarget(this.ampTarget);
+    public void incrementRollers(double amount){
+        target += amount;
     }
 
-    public void incrementRollers(double rotationChange) {
-        this.ampTarget += rotationChange;
-    
-      }
-    
-    public Command incrementRollersCommand(double rotationChange){
-        Command result = runOnce(()-> incrementRollers(rotationChange));
-        return result;
-      } 
-    
-    @Override
-    public void periodic() {
-        m_VelocityVoltage.withVelocity(target);
-        intakeRollerMotor.setControl(m_VelocityVoltage);
-        SmartDashboard.putNumber("Intake Roller Speed",ampTarget);
+    public Boolean hasCoral() {
+        if(mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar){
+            return true;
+        }
+        return false;
     }
 
-    public Command takeIn(){
-        Command result = runOnce(this::feedIn);
-        return result;
+    public Boolean hasAlgae() {
+        if(mCurrentAvgAlgae.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.hasAlgaeBar){
+            return true;
+        }
+        return false;
     }
-
-    public Command throwOutManual(){
-        Command result = runOnce(this::feedOut);
-        return result;
-    } 
-
+    
     public Command stopC(){
         Command result = runOnce(this::stop);
         return result;
     }
-    
-    public Command ampOutCommand(){
-        return run(this::ampOut).withTimeout(0.2).andThen(stopC());
+
+    public Command autoIntakeCoralC(){
+        return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
+                .until(this::hasCoral)
+                .andThen(() -> setTarget(0));
     }
+
+    public Command autoIntakeAlgaeC(){
+        return run(() -> setTarget(IntakeConstants.IntakeAlgaeSpeed))
+                .until(this::hasAlgae)
+                .andThen(() -> setTarget(IntakeConstants.HoldAlgaeSpeed));
+    }
+
+    public Command setTargetC(double targetSpeed){
+        Command result = runOnce(() -> setTarget(targetSpeed));
+        return result;
+    }
+
+    public Command incrementRollersC(double rotationChange){
+        Command result = runOnce(()-> incrementRollers(rotationChange));
+        return result;
+    } 
 
     /*
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.

@@ -46,15 +46,15 @@ public class RevThroughBoreEncoder {
 
     public double getAngleRaw(){
         if(m_Inverted){
-            return -m_dutyCycleEncoder.get();
+            return -m_dutyCycleEncoder.get() - m_offset.getDegrees();
         }   
         else{
-            return m_dutyCycleEncoder.get();
+            return m_dutyCycleEncoder.get() - m_offset.getDegrees();
         }
     }
     
     public Rotation2d getAngle(){
-        double angle = m_dutyCycleEncoder.get();
+        double angle = m_dutyCycleEncoder.get() * 360;
           
         angle -= m_offset.getDegrees();
      
