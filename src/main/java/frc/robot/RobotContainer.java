@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.GamepadDrive;
@@ -46,12 +48,11 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final PoseCommandFactory mPoseCommandFactory = new PoseCommandFactory(this);
-
     public static RobotContainer instance;
     //private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController mJoystick = new CommandXboxController(0);
+    private final CommandXboxController mDriver = new CommandXboxController(0);
+    private final CommandXboxController mOperator = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain mDrivetrain = TunerConstants.createDrivetrain();
    
@@ -101,51 +102,69 @@ public class RobotContainer {
         //     )
         // );
 
-        mDrivetrain.setDefaultCommand(new GamepadDrive(mJoystick));
+        mDrivetrain.setDefaultCommand(new GamepadDrive(mDriver));
 
-        //mJoystick.leftBumper().whileTrue(new goToClosestPose(FieldPositions.Left));
-        //mJoystick.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Right));
+        mDriver.leftBumper().whileTrue(new goToClosestPose(FieldPositions.Left));
+        mDriver.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Right));
 
         // reset the field-centric heading on left bumper press
-        mJoystick.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
+        mDriver.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
 
-        mJoystick.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
-        mJoystick.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));//.onlyIf(mElevator::atPos)));
-        mJoystick.y().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
-        // mJoystick.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
-        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
-        
-        mJoystick.b().whileTrue(new GoBack(1));
-
-        mJoystick.leftBumper().onTrue(mIntakeRollers.autoIntakeCoralC())
+        mDriver.a().onTrue(mIntakeRollers.autoIntakeCoralC())
                             .onFalse(mIntakeRollers.setTargetC(0));
-        //mJoystick.povUp().onTrue(mIntakeRollers.autoIntakeAlgaeC());
-        mJoystick.rightBumper().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
+        mDriver.b().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
                             .onFalse(mIntakeRollers.setTargetC(0));
-
-        // mJoystick.povDown().onTrue(mElevator.zeroC());
-
-        // mJoystick.x().onTrue(mIntakeRollers.autoIntakeCoralC())
-        //                     .onFalse(mIntakeRollers.setTargetC(0));
-        // mJoystick.y().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
-        //                     .onFalse(mIntakeRollers.setTargetC(0));
-        // // mJoystick.a().onTrue(mIntakeRollers.setTargetC(-IntakeConstants.OutakeSpeed))
-        // //                     .onFalse(mIntakeRollers.setTargetC(0));
-        // mJoystick.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
-        //                      .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
+                            .onFalse(mIntakeRollers.setTargetC(0));
+        mDriver.y().onTrue(new GoBack(1));
         
         // mJoystick.b().onFalse(mIntakeWrist.setPosC(0));
 
-        mJoystick.povUp().onTrue(mElevator.incrementPosC(-2));
-        mJoystick.povDown().onTrue(mElevator.incrementPosC(2));
+        mOperator.povUp().onTrue(mElevator.incrementPosC(-2));
+        mOperator.povDown().onTrue(mElevator.incrementPosC(2));
 
-        mJoystick.povLeft().onTrue(mIntakeWrist.incrementPosC(-2));
-        mJoystick.povRight().onTrue(mIntakeWrist.incrementPosC(2));
+        mOperator.povLeft().onTrue(mIntakeWrist.incrementPosC(-2));
+        mOperator.povRight().onTrue(mIntakeWrist.incrementPosC(2));
+        
+
+        mOperator.back().onTrue(frontLimeLight.setAprilTagViableC(false).alongWith(backLimeLight.setAprilTagViableC(false)));
+
+        mOperator.leftBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2AE)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
+        mOperator.rightBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3AE)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
+
+        mOperator.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
+        mOperator.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));//.onlyIf(mElevator::atPos)));
+        mOperator.y().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
+                             .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
 
         //drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public void configureAutonomousCommands() {
+        WaitCommand wait5 = new WaitCommand(0.5);
+        NamedCommands.registerCommand("Wait0.5", wait5);
+
+        WaitCommand wait2 = new WaitCommand(0.2);
+        NamedCommands.registerCommand("Wait0.5", wait2);
+
+        NamedCommands.registerCommand("Load", mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
+        NamedCommands.registerCommand("L2", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));
+        NamedCommands.registerCommand("L3", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        NamedCommands.registerCommand("L4", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
+        NamedCommands.registerCommand("WaitUntilElevatorAtPos", mElevator.waitUntilAtPosC());
+        
+        NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
+        NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
+
+        NamedCommands.registerCommand("Intake", mIntakeRollers.autoIntakeCoralC());
+        NamedCommands.registerCommand("Outake", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed));
+        NamedCommands.registerCommand("Stop", mIntakeRollers.setTargetC(0));
     }
 
     public Command getAutonomousCommand() {

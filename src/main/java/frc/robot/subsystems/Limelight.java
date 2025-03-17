@@ -125,8 +125,14 @@ public class LimeLight extends SubsystemBase {
   public void setPipeline(int pipeline){
     table.getEntry("pipeline").setNumber(pipeline);
   }
-  public Command setPipelineCommand(int pipeline){
-    Command result = runOnce(()->setPipeline(pipeline));
+
+  public Command setPipelineC(int pipeline){
+    Command result = runOnce(() -> setPipeline(pipeline));
+    return result;
+  }
+
+  public Command setAprilTagViableC(Boolean state){
+    Command result = runOnce(() -> setAprilTagViable(state));
     return result;
   }
 }
