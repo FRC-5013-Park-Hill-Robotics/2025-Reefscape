@@ -13,6 +13,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.ElevatorConstants;
@@ -28,7 +29,7 @@ public class Elevator extends SubsystemBase {
 
     private final PIDController eController = new PIDController(1.2, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
-    private final Debouncer stopDown = new Debouncer(0.05);
+    private final Debouncer stopDown = new Debouncer(0.08);
 
     private double setpoint = 0;
 
@@ -65,7 +66,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
 
         //Going down resets encoder
-        if(stopDown.calculate(Math.abs(output) > 0.2 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        if(stopDown.calculate(output < 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             ElevatorLeftMotor.setPosition(0);
             ElevatorRightMotor.setPosition(0);
             setpoint = -0.1;  
@@ -113,6 +114,11 @@ public class Elevator extends SubsystemBase {
 
     public void zero(){
         setpoint = 100;
+    }
+
+    public Command waitUntilAtPosC() {
+        Command result = Commands.waitUntil(this::atPos);
+        return result;
     }
 
     public Command setPosC(double newPos) {
