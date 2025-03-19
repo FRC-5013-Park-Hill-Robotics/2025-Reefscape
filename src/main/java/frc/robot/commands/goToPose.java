@@ -27,9 +27,9 @@ public class goToPose extends Command {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final PIDController ControllerX = new PIDController(50, 0, 0);
-  private final PIDController ControllerY = new PIDController(50, 0, 0);
-  private final PIDController ControllerH = new PIDController(0.15, 0, 0);
+  private final PIDController ControllerX = DriveConstants.ControllerX;
+  private final PIDController ControllerY = DriveConstants.ControllerY;
+  private final PIDController ControllerH = DriveConstants.ControllerH;
   
   private final SlewRateLimiter LimiterX = new SlewRateLimiter(DriveConstants.movementLimitAmount);
   private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
@@ -59,8 +59,9 @@ public class goToPose extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed, DriveConstants.MaxSpeed));
-    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed, DriveConstants.MaxSpeed));
+    double i = DriveConstants.limit;
+    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), i*-DriveConstants.MaxSpeed, i*DriveConstants.MaxSpeed));
+    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), i*-DriveConstants.MaxSpeed, i*DriveConstants.MaxSpeed));
     double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate, DriveConstants.MaxAngularRate);
 
     SmartDashboard.putNumber("PoseOutputX", OutputX);
@@ -68,8 +69,8 @@ public class goToPose extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(-OutputX)
-                  .withVelocityY(-OutputY)
+      drive.withVelocityX(OutputX)
+                  .withVelocityY(OutputY)
                   .withRotationalRate(OutputH)
     );
   }

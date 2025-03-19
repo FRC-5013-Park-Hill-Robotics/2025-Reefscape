@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,9 +30,12 @@ public class goToClosestPose extends Command {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final PIDController ControllerX = new PIDController(40, 0, 1.5);
-  private final PIDController ControllerY = new PIDController(40, 0, 1.5);
-  private final PIDController ControllerH = new PIDController(0.15, 0, 0);
+  private final PIDController ControllerX = DriveConstants.ControllerX;
+  private final PIDController ControllerY = DriveConstants.ControllerY;
+  private final PIDController ControllerH = DriveConstants.ControllerH;
+
+  private final SlewRateLimiter LimiterX = new SlewRateLimiter(DriveConstants.movementLimitAmount);
+  private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
   
   private CommandSwerveDrivetrain m_drivetrain;
 
@@ -61,9 +65,9 @@ public class goToClosestPose extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = 1;
-    double OutputX = MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i);
-    double OutputY = MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i);
+    double i = DriveConstants.limit;
+    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
+    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
     double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*i, DriveConstants.MaxAngularRate*i);
 
     SmartDashboard.putNumber("PoseOutputX", OutputX);
@@ -71,8 +75,8 @@ public class goToClosestPose extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(-OutputX)
-                  .withVelocityY(-OutputY)
+      drive.withVelocityX(OutputX)
+                  .withVelocityY(OutputY)
                   .withRotationalRate(OutputH)
     );
   }

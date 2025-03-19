@@ -27,7 +27,7 @@ public final class IntakeConstants {
         public static final double kMaxAcceleration = kMaxSpeed * 3;
     }
     public final static class RollerGains {
-        public static final double kP = 0.025371;
+        public static final double kP = 0.020371;
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kF = 0;

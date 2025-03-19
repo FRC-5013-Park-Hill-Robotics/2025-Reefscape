@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.math.controller.ArmFeedforward;
@@ -47,6 +48,7 @@ public class IntakeRollers extends SubsystemBase {
         super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.Slot0.kP = IntakeConstants.RollerGains.kP;
         config.Slot0.kI = IntakeConstants.RollerGains.kI;
         config.Slot0.kD = IntakeConstants.RollerGains.kD;

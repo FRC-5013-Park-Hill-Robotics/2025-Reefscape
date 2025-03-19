@@ -48,6 +48,7 @@ public class GamepadDrive extends Command {
 
 		double translationX = modifyAxis(-m_gamepad.getLeftY());
 		double translationY = modifyAxis(-m_gamepad.getLeftX());
+		double translationH = rotationLimiter.calculate(m_gamepad.getRightX()*0.75);
 		
 		if(!(translationX == 0.0 && translationY == 0.0)) {
 			double angle = calculateTranslationDirection(translationX, translationY);
@@ -58,13 +59,14 @@ public class GamepadDrive extends Command {
 		if(m_gamepad.getLeftTriggerAxis() > 0.5){
 			translationX = translationX/3;
 			translationY = translationY/3;
+			translationH = translationH/2;
 		}
 
 		//Applied %50 reduction to rotation
 		m_drivetrain.setControl(drive
 			.withVelocityX(-CommandSwerveDrivetrain.percentOutputToMetersPerSecond(xLimiter.calculate(translationX)))
 			.withVelocityY(CommandSwerveDrivetrain.percentOutputToMetersPerSecond(yLimiter.calculate(translationY))) 
-			.withRotationalRate(-CommandSwerveDrivetrain.percentOutputToRadiansPerSecond(rotationLimiter.calculate(m_gamepad.getRightX()/2))));
+			.withRotationalRate(-CommandSwerveDrivetrain.percentOutputToRadiansPerSecond(translationH)));
 		
 
 		SmartDashboard.putNumber("Throttle", throttle);

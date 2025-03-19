@@ -71,6 +71,7 @@ public class RobotContainer {
     public RobotContainer() {
         instance = this;
         configureBindings();
+        configureAutonomousCommands();
 
         SmartDashboard.putData("Field", m_field);
 
@@ -80,7 +81,7 @@ public class RobotContainer {
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        mDrivetrain.resetPose(new Pose2d(0,0, new Rotation2d(0)));
+        //mDrivetrain.resetPose(new Pose2d(0,0, new Rotation2d(0)));
     }
 
     private void configureBindings() {
@@ -116,7 +117,8 @@ public class RobotContainer {
                             .onFalse(mIntakeRollers.setTargetC(0));
         mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
                             .onFalse(mIntakeRollers.setTargetC(0));
-        mDriver.y().onTrue(new GoBack(1));
+        mDriver.y().whileTrue(new GoBack(0.178)); //0.178
+        //mDriver.y().whileTrue(new goToPose(new Pose2d(0,0,Rotation2d.fromDegrees(0))));
         
         // mJoystick.b().onFalse(mIntakeWrist.setPosC(0));
 
@@ -150,8 +152,10 @@ public class RobotContainer {
         WaitCommand wait5 = new WaitCommand(0.5);
         NamedCommands.registerCommand("Wait0.5", wait5);
 
-        WaitCommand wait2 = new WaitCommand(0.2);
-        NamedCommands.registerCommand("Wait0.5", wait2);
+        WaitCommand wait15 = new WaitCommand(1.5);
+        NamedCommands.registerCommand("Wait1.5", wait15);
+
+        NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
 
         NamedCommands.registerCommand("Load", mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
         NamedCommands.registerCommand("L2", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));
@@ -162,7 +166,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
         NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
-        NamedCommands.registerCommand("Intake", mIntakeRollers.autoIntakeCoralC());
+        NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoralC());
+        NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
         NamedCommands.registerCommand("Outake", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed));
         NamedCommands.registerCommand("Stop", mIntakeRollers.setTargetC(0));
     }

@@ -29,7 +29,7 @@ public class Elevator extends SubsystemBase {
 
     private final PIDController eController = new PIDController(1.2, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
-    private final Debouncer stopDown = new Debouncer(0.08);
+    private final Debouncer stopDown = new Debouncer(0.1);
 
     private double setpoint = 0;
 
@@ -66,7 +66,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
 
         //Going down resets encoder
-        if(stopDown.calculate(output < 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             ElevatorLeftMotor.setPosition(0);
             ElevatorRightMotor.setPosition(0);
             setpoint = -0.1;  
