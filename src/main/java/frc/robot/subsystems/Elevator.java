@@ -29,7 +29,7 @@ public class Elevator extends SubsystemBase {
 
     private final PIDController eController = new PIDController(1.2, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
-    private final Debouncer stopDown = new Debouncer(0.08);
+    private final Debouncer stopDown = new Debouncer(0.1);
 
     private double setpoint = 0;
 

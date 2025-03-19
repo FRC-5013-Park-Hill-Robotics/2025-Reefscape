@@ -29,9 +29,9 @@ public class GoBack extends Command {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final PIDController ControllerX = new PIDController(40, 0, 2);
-  private final PIDController ControllerY = new PIDController(40, 0, 2);
-  private final PIDController ControllerH = new PIDController(0.15, 0, 2);
+  private final PIDController ControllerX = DriveConstants.ControllerX;
+  private final PIDController ControllerY = DriveConstants.ControllerY;
+  private final PIDController ControllerH = DriveConstants.ControllerH;
 
   private final SlewRateLimiter LimiterX = new SlewRateLimiter(DriveConstants.movementLimitAmount);
   private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
@@ -55,8 +55,8 @@ public class GoBack extends Command {
     double signX = (current.getRotation().getCos()<0)?-1:1;
     double signY = (current.getRotation().getSin()<0)?-1:1;
 
-    double x = current.getX()-signX*Math.pow(current.getRotation().getCos(), 2)*mDistance;
-    double y = current.getY()-signY*Math.pow(current.getRotation().getSin(), 2)*mDistance;
+    double x = current.getX()-current.getRotation().getCos()*mDistance;
+    double y = current.getY()-current.getRotation().getSin()*mDistance;
     Rotation2d h = current.getRotation();
     mTarget = new Pose2d(x,y,h);
     SmartDashboard.putNumber("PoseGoalX", x);
@@ -75,7 +75,7 @@ public class GoBack extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = 0.4;
+    double i = DriveConstants.limit;
     double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
     double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
     double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate, DriveConstants.MaxAngularRate);
@@ -85,9 +85,9 @@ public class GoBack extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(-OutputX)
-                  .withVelocityY(-OutputY)
-                  .withRotationalRate(OutputH)
+      drive.withVelocityX(OutputX)
+                  .withVelocityY(OutputY)
+                  .withRotationalRate(0) //Should be no need for rotating?
     );
   }
 
