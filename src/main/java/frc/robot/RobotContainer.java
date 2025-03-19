@@ -71,6 +71,7 @@ public class RobotContainer {
     public RobotContainer() {
         instance = this;
         configureBindings();
+        configureAutonomousCommands();
 
         SmartDashboard.putData("Field", m_field);
 
@@ -80,7 +81,7 @@ public class RobotContainer {
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        mDrivetrain.resetPose(new Pose2d(0,0, new Rotation2d(0)));
+        //mDrivetrain.resetPose(new Pose2d(0,0, new Rotation2d(0)));
     }
 
     private void configureBindings() {
@@ -116,7 +117,7 @@ public class RobotContainer {
                             .onFalse(mIntakeRollers.setTargetC(0));
         mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
                             .onFalse(mIntakeRollers.setTargetC(0));
-        mDriver.y().onTrue(new GoBack(1));
+        mDriver.y().whileTrue(new GoBack(0.178)); //0.178
         
         // mJoystick.b().onFalse(mIntakeWrist.setPosC(0));
 
@@ -151,7 +152,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Wait0.5", wait5);
 
         WaitCommand wait2 = new WaitCommand(0.2);
-        NamedCommands.registerCommand("Wait0.5", wait2);
+        NamedCommands.registerCommand("Wait0.2", wait2);
 
         NamedCommands.registerCommand("Load", mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
         NamedCommands.registerCommand("L2", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));

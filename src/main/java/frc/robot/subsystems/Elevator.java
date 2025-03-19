@@ -66,7 +66,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
 
         //Going down resets encoder
-        if(stopDown.calculate(output < 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             ElevatorLeftMotor.setPosition(0);
             ElevatorRightMotor.setPosition(0);
             setpoint = -0.1;  
