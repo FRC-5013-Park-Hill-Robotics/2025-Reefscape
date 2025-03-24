@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     checkUpdateAlliance();
-
+    
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
       LimeLight backLL = m_robotContainer.getBackLimeLight();
       frontLL.setAlliance(alliance.get());
       backLL.setAlliance(alliance.get());
+      RobotContainer.setAlliance(alliance.get());
     }
   }
 }

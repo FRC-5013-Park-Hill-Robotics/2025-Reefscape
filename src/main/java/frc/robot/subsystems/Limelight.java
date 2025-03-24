@@ -1,21 +1,16 @@
 package frc.robot.subsystems;
 
-import javax.print.attribute.standard.PrinterURI;
-
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.RobotContainer;
 import frc.robot.trobot5013lib.LimelightHelpers;
 //import webblib.util.RectanglePoseArea;
@@ -63,12 +58,25 @@ public class LimeLight extends SubsystemBase {
 
     mDrivetrain = RobotContainer.getInstance().getDrivetrain();
 
-    //+90 Just works, no clue why
-    LimelightHelpers.SetRobotOrientation(name, mDrivetrain.getState().RawHeading.getDegrees()+90, 0, 0, 0, 0, 0);
-  
-
+    //LimelightHelpers.SetRobotOrientation(name, mDrivetrain.getState().RawHeading.getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(name, mDrivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
 
+    Double targetDistance = LimelightHelpers.getTargetPose3d_CameraSpace(name).getTranslation().getDistance(new Translation3d());
+    Double confidence = 1 - ((targetDistance - 1) / 6);
+    // if(alliance == Alliance.Red){
+    //   mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    // }
+    // if(alliance == Alliance.Blue){
+    //   mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    // }
+
+    // SmartDashboard.putNumber("LL_Confidence"+name, confidence);
+    // SmartDashboard.putBoolean("LL_diffBoolean"+name, mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
+    // SmartDashboard.putBoolean("LL_Boolean"+name, (!doRejectUpdate) && mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
+    // SmartDashboard.putNumber("LL_diff"+name, mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()));
+
+    //boolean PoseEstimating = false;
     if(mt2 != null && aprilTagViable){
       // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       if(Math.abs(Math.toDegrees(mDrivetrain.getState().Speeds.omegaRadiansPerSecond)) > 720) {
@@ -78,12 +86,17 @@ public class LimeLight extends SubsystemBase {
       {
         doRejectUpdate = true;
       }
-      if(!doRejectUpdate)
+      if((!doRejectUpdate)&&true)//(trust == true || mDrivetrain.getState().Pose.getTranslation().getDistance(mt1.pose.getTranslation()) < 0.5))
       {
         mDrivetrain.addVisionMeasurement(
             mt2.pose,
-            mt2.timestampSeconds);
+            mt2.timestampSeconds,
+            VecBuilder.fill(confidence, confidence, .01) //Maybe try 9999 for n3?
+        );
+        trust = false;
       }
+      // SmartDashboard.putBoolean("LL_Boolean"+name, (!doRejectUpdate) && mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
+      // SmartDashboard.putBoolean("LL_PoseEstimating"+name, PoseEstimating);
     }
   }
 
@@ -128,6 +141,11 @@ public class LimeLight extends SubsystemBase {
 
   public Command setPipelineC(int pipeline){
     Command result = runOnce(() -> setPipeline(pipeline));
+    return result;
+  }
+
+  public Command setTrustC(boolean trust){
+    Command result = runOnce(() -> setTrust(trust));
     return result;
   }
 

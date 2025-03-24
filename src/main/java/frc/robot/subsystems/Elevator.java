@@ -66,11 +66,11 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
 
         //Going down resets encoder
-        if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
-            ElevatorLeftMotor.setPosition(0);
-            ElevatorRightMotor.setPosition(0);
-            setpoint = -0.1;  
-        }
+        // if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        //     ElevatorLeftMotor.setPosition(0);
+        //     ElevatorRightMotor.setPosition(0);
+        //     setpoint = -0.1;  
+        // }
 
         //Going too high stops motor
         if(output > 0 && getPosition() > ElevatorConstants.MaxHeight){
@@ -113,7 +113,9 @@ public class Elevator extends SubsystemBase {
     }
 
     public void zero(){
-        setpoint = 100;
+        ElevatorLeftMotor.setPosition(0);
+        ElevatorRightMotor.setPosition(0);
+        setpoint = -0.1;  
     }
 
     public Command waitUntilAtPosC() {

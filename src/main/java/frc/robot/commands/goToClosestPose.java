@@ -57,6 +57,10 @@ public class goToClosestPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("PoseGoalX", mTarget.getX());
+    SmartDashboard.putNumber("PoseGoalY", mTarget.getY());
+    SmartDashboard.putNumber("PoseGoalH", mTarget.getRotation().getDegrees());
+
     double ErrorX = m_drivetrain.getState().Pose.getX() - mTarget.getX();
     double ErrorY = m_drivetrain.getState().Pose.getY() - mTarget.getY();
     double ErrorH = m_drivetrain.getState().Pose.getRotation().minus(mTarget.getRotation()).getDegrees();
@@ -75,8 +79,8 @@ public class goToClosestPose extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(OutputX)
-                  .withVelocityY(OutputY)
+      drive.withVelocityX(-OutputX)
+                  .withVelocityY(-OutputY)
                   .withRotationalRate(OutputH)
     );
   }

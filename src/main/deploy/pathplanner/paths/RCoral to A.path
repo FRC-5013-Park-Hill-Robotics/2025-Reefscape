@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.2273544520547945,
-        "y": 6.076005993150685
+        "x": 1.1569777397260272,
+        "y": 0.5766053082191785
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.868321917808219,
-        "y": 6.391545376712329
+        "x": 1.3282012114848623,
+        "y": 1.0607912075737205
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Coral"
     },
     {
       "anchor": {
-        "x": 2.133647260273973,
-        "y": 5.4449272260273975
+        "x": 3.1645275590551183,
+        "y": 4.149370078740157
       },
       "prevControl": {
-        "x": 2.945034246575343,
-        "y": 6.782213184931506
-      },
-      "nextControl": {
-        "x": 1.6149198191626977,
-        "y": 4.589987554566222
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.1553938356164384,
-        "y": 4.002461472602739
-      },
-      "prevControl": {
-        "x": 2.7688784246575344,
-        "y": 3.8747431506849317
+        "x": 3.061462255864091,
+        "y": 3.9088967737441584
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A."
     }
   ],
   "rotationTargets": [],
@@ -64,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.0451587461278
+    "rotation": 53.74616226255522
   },
   "useDefaultConstraints": true
 }

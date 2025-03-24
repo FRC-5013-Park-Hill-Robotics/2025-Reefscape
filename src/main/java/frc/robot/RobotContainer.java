@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,19 +53,19 @@ public class RobotContainer {
     //private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController mDriver = new CommandXboxController(0);
-    private final CommandXboxController mOperator = new CommandXboxController(1);
+    //private final CommandXboxController mOperator = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain mDrivetrain = TunerConstants.createDrivetrain();
    
-    public final IntakeWrist mIntakeWrist = new IntakeWrist();
-    public final IntakeRollers mIntakeRollers = new IntakeRollers();
-    public final Elevator mElevator = new Elevator();
+    //public final IntakeWrist mIntakeWrist = new IntakeWrist();
+    //public final IntakeRollers mIntakeRollers = new IntakeRollers();
+    //public final Elevator mElevator = new Elevator();
 
     private Field2d m_field = new Field2d();
+    private static Alliance mAlliance = Alliance.Blue;
 
-    //Front false by default for auto, enabled in teleop
-    public final LimeLight frontLimeLight = new LimeLight("limelight-front", true);
-    public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
+    public final LimeLight frontLimeLight = new LimeLight("limelight-front", false);
+    public final LimeLight backLimeLight = new LimeLight("limelight-back", false);
 
     private final SendableChooser<Command> autoChooser;
 
@@ -80,8 +81,6 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser(); 
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        //mDrivetrain.resetPose(new Pose2d(0,0, new Rotation2d(0)));
     }
 
     private void configureBindings() {
@@ -111,39 +110,40 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         mDriver.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
 
-        mDriver.a().onTrue(mIntakeRollers.autoIntakeCoralC())
-                            .onFalse(mIntakeRollers.setTargetC(0));
-        mDriver.b().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
-                            .onFalse(mIntakeRollers.setTargetC(0));
-        mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
-                            .onFalse(mIntakeRollers.setTargetC(0));
-        mDriver.y().whileTrue(new GoBack(0.178)); //0.178
+        // mDriver.a().onTrue(mIntakeRollers.autoIntakeCoralC())
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // mDriver.b().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
+        // mDriver.y().whileTrue(new GoBack(0.178)); //0.178
         //mDriver.y().whileTrue(new goToPose(new Pose2d(0,0,Rotation2d.fromDegrees(0))));
         
         // mJoystick.b().onFalse(mIntakeWrist.setPosC(0));
 
-        mOperator.povUp().onTrue(mElevator.incrementPosC(-2));
-        mOperator.povDown().onTrue(mElevator.incrementPosC(2));
+        // mOperator.povUp().onTrue(mElevator.incrementPosC(-2));
+        // mOperator.povDown().onTrue(mElevator.incrementPosC(2));
 
-        mOperator.povLeft().onTrue(mIntakeWrist.incrementPosC(-2));
-        mOperator.povRight().onTrue(mIntakeWrist.incrementPosC(2));
+        // mOperator.povLeft().onTrue(mIntakeWrist.incrementPosC(-2));
+        // mOperator.povRight().onTrue(mIntakeWrist.incrementPosC(2));
         
 
-        mOperator.back().onTrue(frontLimeLight.setAprilTagViableC(false).alongWith(backLimeLight.setAprilTagViableC(false)));
+        // mOperator.back().onTrue(mElevator.zeroC());
+        // mOperator.start().onTrue(frontLimeLight.setTrustC(true).alongWith(backLimeLight.setTrustC(true)));
 
-        mOperator.leftBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2AE)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
-        mOperator.rightBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3AE)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
+        // mOperator.leftBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2AE)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
+        // mOperator.rightBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3AE)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
-        mOperator.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
-        mOperator.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));//.onlyIf(mElevator::atPos)));
-        mOperator.y().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
-                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
-        mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
-                             .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
+        // mOperator.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
+        // mOperator.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));//.onlyIf(mElevator::atPos)));
+        // mOperator.y().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3E)
+        //                     .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        // mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
+        //                      .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
 
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -152,29 +152,40 @@ public class RobotContainer {
         WaitCommand wait5 = new WaitCommand(0.5);
         NamedCommands.registerCommand("Wait0.5", wait5);
 
+        WaitCommand wait10 = new WaitCommand(1);
+        NamedCommands.registerCommand("Wait1", wait10);
+
         WaitCommand wait15 = new WaitCommand(1.5);
         NamedCommands.registerCommand("Wait1.5", wait15);
 
         NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
 
-        NamedCommands.registerCommand("Load", mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
-        NamedCommands.registerCommand("L2", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));
-        NamedCommands.registerCommand("L3", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
-        NamedCommands.registerCommand("L4", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
-        NamedCommands.registerCommand("WaitUntilElevatorAtPos", mElevator.waitUntilAtPosC());
+        // NamedCommands.registerCommand("Load", mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.IW)));
+        // NamedCommands.registerCommand("L2", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2W)));
+        // NamedCommands.registerCommand("L3", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3W)));
+        // NamedCommands.registerCommand("L4", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L4W)));
+        // NamedCommands.registerCommand("WaitUntilElevatorAtPos", mElevator.waitUntilAtPosC());
         
-        NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
-        NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
+        // NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
+        // NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
-        NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoralC());
-        NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
-        NamedCommands.registerCommand("Outake", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed));
-        NamedCommands.registerCommand("Stop", mIntakeRollers.setTargetC(0));
+        // NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoralC());
+        // NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
+        // NamedCommands.registerCommand("Outake", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed));
+        // NamedCommands.registerCommand("Stop", mIntakeRollers.setTargetC(0));
     }
 
     public Command getAutonomousCommand() {
         //return Commands.print("No autonomous command configured");
         return autoChooser.getSelected();
+    }
+
+    public static void setAlliance(Alliance alliance){
+        mAlliance = alliance;
+    }
+
+    public static Alliance getAlliance(){
+        return mAlliance;
     }
 
     public void updateField(){

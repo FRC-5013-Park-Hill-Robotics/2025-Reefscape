@@ -69,8 +69,8 @@ public class goToPose extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(OutputX)
-                  .withVelocityY(OutputY)
+      drive.withVelocityX(-OutputX)
+                  .withVelocityY(-OutputY)
                   .withRotationalRate(OutputH)
     );
   }
