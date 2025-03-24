@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -37,7 +38,8 @@ public class GoBack extends Command {
   private final SlewRateLimiter LimiterY = new SlewRateLimiter(DriveConstants.movementLimitAmount);
   
   private CommandSwerveDrivetrain m_drivetrain;
-
+  private Alliance m_Alliance;
+  
   private Pose2d mTarget;
   private double mDistance;
 
@@ -52,11 +54,21 @@ public class GoBack extends Command {
   public void initialize() {
     Pose2d current = m_drivetrain.getState().Pose;
     
-    double signX = (current.getRotation().getCos()<0)?-1:1;
-    double signY = (current.getRotation().getSin()<0)?-1:1;
+    //double signX = (current.getRotation().getCos()<0)?-1:1;
+    //double signY = (current.getRotation().getSin()<0)?-1:1;
 
-    double x = current.getX()-current.getRotation().getCos()*mDistance;
-    double y = current.getY()-current.getRotation().getSin()*mDistance;
+    double x = 0;
+    double y = 0;
+
+    if(RobotContainer.getAlliance() == Alliance.Red){
+      x = current.getX()-current.getRotation().getCos()*mDistance;
+      y = current.getY()-current.getRotation().getSin()*mDistance;
+    }
+    if(RobotContainer.getAlliance() == Alliance.Blue){
+      x = current.getX()-current.getRotation().minus(Rotation2d.fromDegrees(180)).getCos()*mDistance;
+      y = current.getY()-current.getRotation().minus(Rotation2d.fromDegrees(180)).getSin()*mDistance;
+    }
+
     Rotation2d h = current.getRotation();
     mTarget = new Pose2d(x,y,h);
     SmartDashboard.putNumber("PoseGoalX", x);
@@ -85,8 +97,8 @@ public class GoBack extends Command {
     SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
-      drive.withVelocityX(OutputX)
-                  .withVelocityY(OutputY)
+      drive.withVelocityX(-OutputX)
+                  .withVelocityY(-OutputY)
                   .withRotationalRate(0) //Should be no need for rotating?
     );
   }
