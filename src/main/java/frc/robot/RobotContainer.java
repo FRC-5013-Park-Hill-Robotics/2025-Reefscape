@@ -62,10 +62,10 @@ public class RobotContainer {
     //public final Elevator mElevator = new Elevator();
 
     private Field2d m_field = new Field2d();
-    private static Alliance mAlliance = Alliance.Blue;
+    private static Alliance mAlliance = Alliance.Blue; 
 
     public final LimeLight frontLimeLight = new LimeLight("limelight-front", false);
-    public final LimeLight backLimeLight = new LimeLight("limelight-back", false);
+    public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
 
     private final SendableChooser<Command> autoChooser;
 

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.trobot5013lib.AverageOverTime;
 
 public class Elevator extends SubsystemBase {
     private final TalonFX ElevatorLeftMotor = new TalonFX(CANConstants.ELEVATOR_LEFT_ID, CANConstants.CANBUS_ELEVATOR);
@@ -30,6 +31,8 @@ public class Elevator extends SubsystemBase {
     private final PIDController eController = new PIDController(1.2, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
     private final Debouncer stopDown = new Debouncer(0.1);
+
+    private final AverageOverTime suppyCurrentMessure = new AverageOverTime(200);
 
     private double setpoint = 0;
 
@@ -66,11 +69,14 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
 
         //Going down resets encoder
-        // if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
-        //     ElevatorLeftMotor.setPosition(0);
-        //     ElevatorRightMotor.setPosition(0);
-        //     setpoint = -0.1;  
+        // if(stopDown.calculate(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble() > 30 && output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        //     zero();
         // }
+
+        suppyCurrentMessure.addMessurement(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble(), ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime());
+        if(50 < suppyCurrentMessure.getAverage(ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime())){
+            setpoint = ElevatorLeftMotor.getPosition().getValueAsDouble();
+        }
 
         //Going too high stops motor
         if(output > 0 && getPosition() > ElevatorConstants.MaxHeight){

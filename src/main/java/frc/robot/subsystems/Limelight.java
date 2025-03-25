@@ -23,7 +23,7 @@ public class LimeLight extends SubsystemBase {
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
   private NetworkTableEntry ta;
-  private NetworkTableEntry tv;
+  private NetworkTableEntry tv; 
 
   private boolean aprilTagViable;
   private RobotContainer m_robotContainer;
@@ -73,8 +73,8 @@ public class LimeLight extends SubsystemBase {
 
     // SmartDashboard.putNumber("LL_Confidence"+name, confidence);
     // SmartDashboard.putBoolean("LL_diffBoolean"+name, mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
-    // SmartDashboard.putBoolean("LL_Boolean"+name, (!doRejectUpdate) && mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
-    // SmartDashboard.putNumber("LL_diff"+name, mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()));
+    //SmartDashboard.putNumber("MT2 Drivetrain", mDrivetrain.getState().Pose.getRotation().getDegrees());
+    //SmartDashboard.putNumber("MT2 Heading", mt2.pose.getRotation().getDegrees());
 
     //boolean PoseEstimating = false;
     if(mt2 != null && aprilTagViable){
@@ -91,9 +91,8 @@ public class LimeLight extends SubsystemBase {
         mDrivetrain.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds,
-            VecBuilder.fill(confidence, confidence, .01) //Maybe try 9999 for n3?
+            VecBuilder.fill(confidence, confidence, 9999999) //Maybe try 9999 for n3? Was 0.01
         );
-        trust = false;
       }
       // SmartDashboard.putBoolean("LL_Boolean"+name, (!doRejectUpdate) && mDrivetrain.getState().Pose.getTranslation().getDistance(mt2.pose.getTranslation()) < 0.5);
       // SmartDashboard.putBoolean("LL_PoseEstimating"+name, PoseEstimating);

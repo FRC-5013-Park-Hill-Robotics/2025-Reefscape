@@ -19,9 +19,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class GamepadDrive extends Command {
 	private CommandSwerveDrivetrain m_drivetrain;
 	private CommandXboxController m_gamepad;
-	private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.movementLimitAmount*3);
-	private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.movementLimitAmount*3);
-	private SlewRateLimiter rotationLimiter = new SlewRateLimiter(9);
+	private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.movementLimitAmount);
+	private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.movementLimitAmount);
+	private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3);
 
 	private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(DriveConstants.MaxAngularRate * 0.1) // Add a 10% deadband
@@ -48,7 +48,7 @@ public class GamepadDrive extends Command {
 
 		double translationX = modifyAxis(-m_gamepad.getLeftY());
 		double translationY = modifyAxis(-m_gamepad.getLeftX());
-		double translationH = rotationLimiter.calculate(m_gamepad.getRightX());
+		double translationH = rotationLimiter.calculate(m_gamepad.getRightX()*0.75);
 		
 		if(!(translationX == 0.0 && translationY == 0.0)) {
 			double angle = calculateTranslationDirection(translationX, translationY);
@@ -62,10 +62,10 @@ public class GamepadDrive extends Command {
 			translationH = translationH/2;
 		}
 
-		//Applied %50 reduction to rotation
+		double i = 0.25;
 		m_drivetrain.setControl(drive
-			.withVelocityX(-CommandSwerveDrivetrain.percentOutputToMetersPerSecond(xLimiter.calculate(translationX)))
-			.withVelocityY(CommandSwerveDrivetrain.percentOutputToMetersPerSecond(yLimiter.calculate(translationY))) 
+			.withVelocityX(-CommandSwerveDrivetrain.percentOutputToMetersPerSecond(i*xLimiter.calculate(translationX)))
+			.withVelocityY(CommandSwerveDrivetrain.percentOutputToMetersPerSecond(i*yLimiter.calculate(translationY))) 
 			.withRotationalRate(-CommandSwerveDrivetrain.percentOutputToRadiansPerSecond(translationH)));
 		
 
