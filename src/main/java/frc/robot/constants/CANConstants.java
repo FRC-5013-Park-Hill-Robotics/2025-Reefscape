@@ -37,4 +37,6 @@ public final class CANConstants {
     public static final int ELEVATOR_RIGHT_ENCODER_DIO = 0;
 
     public static final int WRIST_ENCODER_DIO = 1;
+
+    public static final int ELEVATOR_IR_DIO = 0;
 }

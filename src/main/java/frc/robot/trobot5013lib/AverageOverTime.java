@@ -10,6 +10,11 @@ public class AverageOverTime {
 
     public double mOutlier;
 
+    public AverageOverTime(double timespace){
+        mTimespace = timespace;
+        mOutlier = 999999999;
+    }
+
     public AverageOverTime(double timespace, double outlier){
         mTimespace = timespace;
         mOutlier = outlier;

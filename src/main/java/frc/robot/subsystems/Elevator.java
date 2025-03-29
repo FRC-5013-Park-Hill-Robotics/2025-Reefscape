@@ -10,13 +10,14 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.trobot5013lib.AverageOverTime;
 
 public class Elevator extends SubsystemBase {
     private final TalonFX ElevatorLeftMotor = new TalonFX(CANConstants.ELEVATOR_LEFT_ID, CANConstants.CANBUS_ELEVATOR);
@@ -25,11 +26,17 @@ public class Elevator extends SubsystemBase {
     //private final DutyCycleEncoder encoderLeft = new DutyCycleEncoder(CANConstants.ELEVATOR_LEFT_ENCODER_DIO);
     //private final DutyCycleEncoder encoderRight = new DutyCycleEncoder(CANConstants.ELEVATOR_RIGHT_ENCODER_DIO, 10,0);
     
+    private final DigitalInput IRDetector = new DigitalInput(CANConstants.ELEVATOR_IR_DIO);
+
     private final Follower rightFollow = new Follower(CANConstants.ELEVATOR_LEFT_ID, true);
 
     private final PIDController eController = new PIDController(1.2, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
     private final Debouncer stopDown = new Debouncer(0.1);
+    private final Debouncer atPosDebounce = new Debouncer(0.05);
+
+
+    private final AverageOverTime suppyCurrentMessure = new AverageOverTime(200);
 
     private double setpoint = 0;
 
@@ -57,29 +64,31 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("elevatorPos", setpoint);
 
         double output = eController.calculate(getPosition(), setpoint);
+        SmartDashboard.putNumber("elevatorPIDOutput", output);
         output = limiter.calculate(MathUtil.clamp(output, -ElevatorConstants.maxVoltage, ElevatorConstants.maxVoltage)) + ElevatorConstants.feedforward;
-        SmartDashboard.putNumber("elevatorEncoderPIDOutput", output);
+        SmartDashboard.putNumber("elevatorPIDOutputPlusFF", output);
 
         SmartDashboard.putNumber("elevatorVolL", ElevatorLeftMotor.getSupplyVoltage().getValueAsDouble());
         SmartDashboard.putNumber("elevatorVolR", ElevatorRightMotor.getSupplyVoltage().getValueAsDouble());
 
-        SmartDashboard.putNumber("elevatorVelocity", ElevatorRightMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("elevatorVelocity", ElevatorLeftMotor.getVelocity().getValueAsDouble());
 
-        //Going down resets encoder
-        // if(stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
-        //     ElevatorLeftMotor.setPosition(0);
-        //     ElevatorRightMotor.setPosition(0);
-        //     setpoint = -0.1;  
-        // }
-
-        //Going too high stops motor
-        if(output > 0 && getPosition() > ElevatorConstants.MaxHeight){
-            //output = 0;
-        }
+        SmartDashboard.putBoolean("IRDetector", IRDetector.get());
         
-        //Going too high while wrist up stops motor
-        if(output > 0 && getPosition() > ElevatorConstants.MaxHeightWhenWristUp){
-            //output = 0;
+        if(IRDetector.get() && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+            zero();
+        }
+        //Going down resets encoder WHEN current high & going down & low velocity
+        // if(stopDown.calculate(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble() > 30 && output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 /*&& Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()) < 1*/)){
+        //     zero();
+        // }
+        if(false){
+            setPosToCurrent();
+        }
+
+        suppyCurrentMessure.addMessurement(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble(), ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime());
+        if(50 < suppyCurrentMessure.getAverage(ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime()) && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 ){
+            setpoint = ElevatorLeftMotor.getPosition().getValueAsDouble();
         }
 
         ElevatorLeftMotor.setVoltage(output);
@@ -90,7 +99,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean atPos(){
-        if(Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()-setpoint)<1){
+        if(atPosDebounce.calculate(Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()-setpoint)<1)){
             return true;
         }
         else{
@@ -99,13 +108,17 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setPos(double newPos) {
-        if(newPos < ElevatorConstants.UpperHardLimit){
-            newPos = ElevatorConstants.UpperHardLimit;
-        }
-        if(newPos > ElevatorConstants.LowerHardLimit){
-            newPos = ElevatorConstants.LowerHardLimit;
-        }
+        // if(newPos < ElevatorConstants.UpperHardLimit){
+        //     newPos = ElevatorConstants.UpperHardLimit;
+        // }
+        // if(newPos > ElevatorConstants.LowerHardLimit){
+        //     newPos = ElevatorConstants.LowerHardLimit;
+        // }
         setpoint = newPos;
+    }
+
+    public void setPosToCurrent() {
+        setpoint = getPosition();
     }
 
     public void incrementPos(double add) {
@@ -125,6 +138,11 @@ public class Elevator extends SubsystemBase {
 
     public Command setPosC(double newPos) {
         Command result = runOnce(() ->  setPos(newPos));
+        return result;
+    }
+
+    public Command setPosToCurrentC() {
+        Command result = runOnce(() ->  setPosToCurrent());
         return result;
     }
 
