@@ -62,10 +62,10 @@ public class GamepadDrive extends Command {
 			translationH = translationH/2;
 		}
 
-		double i = 0.25;
+		double i = 1;
 		m_drivetrain.setControl(drive
-			.withVelocityX(-CommandSwerveDrivetrain.percentOutputToMetersPerSecond(i*xLimiter.calculate(translationX)))
-			.withVelocityY(CommandSwerveDrivetrain.percentOutputToMetersPerSecond(i*yLimiter.calculate(translationY))) 
+			.withVelocityX(-CommandSwerveDrivetrain.percentOutputToMetersPerSecond(xLimiter.calculate(i*translationX)))
+			.withVelocityY(CommandSwerveDrivetrain.percentOutputToMetersPerSecond(yLimiter.calculate(i*translationY))) 
 			.withRotationalRate(-CommandSwerveDrivetrain.percentOutputToRadiansPerSecond(translationH)));
 		
 

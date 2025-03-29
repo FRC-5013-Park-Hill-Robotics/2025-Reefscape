@@ -35,14 +35,14 @@ import static edu.wpi.first.units.Units.Seconds;
 
 public class IntakeRollers extends SubsystemBase {
 
-    // TODO Create motor controller of type TalonFx using the can constants for the id
+    // TODO Create motor controller of type TalonFx musing the can constants for the id
     private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
     private double target = 0;
     private SlewRateLimiter limiter = new SlewRateLimiter(400);
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
-    private AverageOverTime mCurrentAvgCoral = new AverageOverTime(0.5, 5);
-    private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.5, 5);
+    private AverageOverTime mCurrentAvgCoral = new AverageOverTime(0.35, 5);
+    private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.15, 35);
 
     public IntakeRollers() {
         super();
@@ -72,6 +72,7 @@ public class IntakeRollers extends SubsystemBase {
         mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
         mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
         SmartDashboard.putNumber("Intake Avg", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
+        SmartDashboard.putNumber("Intake Avg Algae", mCurrentAvgAlgae.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
         SmartDashboard.putBoolean("Intake HasGamepiece", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar);
     }
 
@@ -109,6 +110,8 @@ public class IntakeRollers extends SubsystemBase {
     public Command autoIntakeCoralC(){
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
+                //.andThen(() -> setTarget(-IntakeConstants.IntakeCoralSpeed))
+                //.
                 .andThen(() -> setTarget(0));
     }
 

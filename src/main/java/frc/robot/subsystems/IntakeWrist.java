@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CANConstants;
+import frc.robot.constants.ElevatorWristSetpoints;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.trobot5013lib.CANCoderWrapper;
 import frc.robot.trobot5013lib.RevThroughBoreEncoder;
@@ -43,13 +44,18 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 public class IntakeWrist extends SubsystemBase {
 
     private final TalonFX intakeWristMotor = new TalonFX(CANConstants.INTAKE_WRIST_ID, CANConstants.CANBUS_ELEVATOR);
     
-    private final RevThroughBoreEncoder encoder = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO, true, Math.toRadians(-52));
+    //private final Elevator elevator = RobotContainer.getInstance().getElevator();
 
-    public double setpointDegrees = 0;
+    private final RevThroughBoreEncoder encoder = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO, true, Math.toRadians(-0));
+
+    public double setpointDegrees;
 
     private ArmFeedforward feedforward = new ArmFeedforward(
             IntakeConstants.RotationGains.kS,
@@ -73,6 +79,8 @@ public class IntakeWrist extends SubsystemBase {
     /** Creates a new IntakeWrist. */
     public IntakeWrist() {
         super();
+        setpointDegrees = getPosition();
+
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -84,20 +92,30 @@ public class IntakeWrist extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         if (this.stop == true) {
             intakeWristMotor.setControl(wristVoltageOut.withOutput(0));
         } else {
-            double output = wristController.calculate(encoder.getAngle().getDegrees(), setpointDegrees);
-            SmartDashboard.putNumber("Wrist Setpoint", setpointDegrees);
+            double output = 0;
+            // if(elevator.getPosition() > IntakeConstants.DangerZoneEUpper && elevator.getPosition() < IntakeConstants.DangerZoneELower && setpointDegrees < IntakeConstants.DangerZoneWRange){
+            //     output = wristController.calculate(encoder.getAngle().getDegrees(), IntakeConstants.DangerZoneWSetpoint);
+            //     SmartDashboard.putNumber("Wrist Setpoint", IntakeConstants.DangerZoneWSetpoint);
+            // } 
+            // else{
+            //     output = wristController.calculate(encoder.getAngle().getDegrees(), setpointDegrees);
+            //     SmartDashboard.putNumber("Wrist Setpoint", setpointDegrees);
+            // }
+            output = wristController.calculate(encoder.getAngle().getDegrees(), setpointDegrees);
 
             //double acceleration = (wristController.getSetpoint().velocity - lastSpeed)
             //        / (Timer.getFPGATimestamp() - lastTime);
-            double feedforwardVal = Math.sin(encoder.getAngle().getRadians()) * IntakeConstants.feedforwardMod + IntakeConstants.feedforwardConst;
+            double feedforwardVal = Math.sin(encoder.getAngle().getRadians() + Math.toRadians(17.5)) * IntakeConstants.feedforwardMod;
                     //feedforward.calculate(encoder.getAngle().getRadians(),
                     //wristController.getSetpoint().velocity, acceleration);
 
             SmartDashboard.putNumber("Wrist Power", output);
             SmartDashboard.putNumber("Wrist FF", feedforwardVal);
+            SmartDashboard.putNumber("Wrist Setpoint", setpointDegrees);
             SmartDashboard.putNumber("Wrist Angle", encoder.getAngle().getDegrees());
             SmartDashboard.putNumber("Wrist Combined", MathUtil.clamp(output+feedforwardVal, -IntakeConstants.maxVoltage, IntakeConstants.maxVoltage));
             intakeWristMotor
@@ -119,12 +137,28 @@ public class IntakeWrist extends SubsystemBase {
         setpointDegrees = setpoint;
     }
 
+    public void setPositionToCurrent(){
+        setpointDegrees = getPosition();
+    }
+
     public void incrementPos(double increment){
         setpointDegrees += increment;
     }
 
     public Command setPosC(double setpoint){
         Command result = runOnce(() -> setPosition(setpoint));
+        return result;
+    }
+
+    public Command setPosFullC(double setpoint, BooleanSupplier until){
+        Command result = run(() -> setPosition(ElevatorWristSetpoints.WHold))
+                            .until(until)
+                            .andThen(() -> setPosition(setpoint));
+        return result;
+    }
+
+    public Command setPosToCurrentC(){
+        Command result = runOnce(() -> setPositionToCurrent());
         return result;
     }
 
