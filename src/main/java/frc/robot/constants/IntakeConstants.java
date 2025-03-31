@@ -15,9 +15,9 @@ public final class IntakeConstants {
         public static final Rotation2d kPositionTolerance= Rotation2d.fromDegrees(2.5);
         //public static final double kP = 3.5;
         //public static final double kP = 3.75013;
-        public static final double kP = 0.135013;
+        public static final double kP = 0.095013;
         public static final double kI = 0.0;
-        public static final double kD = 0.015;
+        public static final double kD = 0.00;
         public static final double kF = 0;
         public static final double kS = 0.5005013;
         public static final double kG = 0.672;
@@ -40,14 +40,14 @@ public final class IntakeConstants {
 
     public static final double MEUpLowerLimit = 0; //Motor Encoder range for Up (so we don't hit the top of elevator)
     public static final double MEUpUpperLimit = 0; //Motor Encoder range for Up (so we don't hit the top of elevator)
-    public static final double feedforwardMod = -0.25;
+    public static final double feedforwardMod = -0.38;
     public static final double maxVoltage = 3;
 
     public static final double HasCoralBar = 2.8;
     public static final double hasAlgaeBar = 10;
     public static final double IntakeCoralSpeed = 60;
     public static final double IntakeAlgaeSpeed = 60;
-    public static final double HoldAlgaeSpeed = 0.2;
+    public static final double HoldAlgaeSpeed = 0.1;
     public static final double OutakeSpeed = 180;
 
     //When the wrist could potentially slam into the to of the elevator

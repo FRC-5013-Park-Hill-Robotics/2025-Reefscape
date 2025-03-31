@@ -5,93 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "L2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Start to F L2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Load"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "F L2 to RCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RCoral to B L2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start to F L2"
+                }
+              }
+            ]
           }
         },
         {
@@ -101,69 +30,47 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Wait0.5"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "F L2 to RCoral"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop"
+            "name": "IntakeAuto"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Load"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "B L2 to RCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RCoral to A L2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RCoral to B L2"
+                }
+              }
+            ]
           }
         },
         {
@@ -173,27 +80,72 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Wait0.5"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B L2 to RCoral"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop"
+            "name": "IntakeAuto"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L2Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RCoral to A L2"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Load"
+            "name": "Outake"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "A L2 to RCoral"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A L2 to RCoral"
+                }
+              }
+            ]
           }
         }
       ]

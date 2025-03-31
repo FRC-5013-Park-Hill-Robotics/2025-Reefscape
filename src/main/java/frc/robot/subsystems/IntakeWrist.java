@@ -109,15 +109,10 @@ public class IntakeWrist extends SubsystemBase {
 
             //double acceleration = (wristController.getSetpoint().velocity - lastSpeed)
             //        / (Timer.getFPGATimestamp() - lastTime);
-            double feedforwardVal = Math.sin(encoder.getAngle().getRadians() + Math.toRadians(17.5)) * IntakeConstants.feedforwardMod;
+            double feedforwardVal = Math.sin(encoder.getAngle().getRadians() - Math.toRadians(17.5)) * IntakeConstants.feedforwardMod;
                     //feedforward.calculate(encoder.getAngle().getRadians(),
                     //wristController.getSetpoint().velocity, acceleration);
 
-            SmartDashboard.putNumber("Wrist Power", output);
-            SmartDashboard.putNumber("Wrist FF", feedforwardVal);
-            SmartDashboard.putNumber("Wrist Setpoint", setpointDegrees);
-            SmartDashboard.putNumber("Wrist Angle", encoder.getAngle().getDegrees());
-            SmartDashboard.putNumber("Wrist Combined", MathUtil.clamp(output+feedforwardVal, -IntakeConstants.maxVoltage, IntakeConstants.maxVoltage));
             intakeWristMotor
                     .setControl(wristVoltageOut.withOutput(MathUtil.clamp(output + feedforwardVal, -IntakeConstants.maxVoltage, IntakeConstants.maxVoltage)));
             //lastSpeed = wristController.getSetpoint();
