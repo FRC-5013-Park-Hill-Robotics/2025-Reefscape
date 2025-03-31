@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
@@ -65,15 +66,9 @@ public class IntakeRollers extends SubsystemBase {
     public void periodic() {
         m_VelocityVoltage.withVelocity(limiter.calculate(target));
         intakeRollerMotor.setControl(m_VelocityVoltage);
-        SmartDashboard.putNumber("Intake Roller Speed", m_VelocityVoltage.Velocity);
-        SmartDashboard.putNumber("Intake Roller Amp", intakeRollerMotor.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Intake Roller Timestamp", intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
-
+        
         mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
         mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
-        SmartDashboard.putNumber("Intake Avg", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
-        SmartDashboard.putNumber("Intake Avg Algae", mCurrentAvgAlgae.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()));
-        SmartDashboard.putBoolean("Intake HasGamepiece", mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar);
     }
 
     public void stop() {
@@ -114,6 +109,16 @@ public class IntakeRollers extends SubsystemBase {
                 //.
                 .andThen(() -> setTarget(0));
     }
+
+    public Command autoIntakeCoral4AutoC(){
+        WaitCommand wait5 = new WaitCommand(0.5);
+        return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
+                .until(this::hasCoral)
+                .withTimeout(3)
+                .andThen(() -> setTargetC(-10))
+                .andThen(wait5)
+                .andThen(() -> setTarget(0));
+    }    
 
     public Command autoIntakeAlgaeC(){
         return run(() -> setTarget(IntakeConstants.IntakeAlgaeSpeed))

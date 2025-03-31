@@ -58,22 +58,10 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("encoderLeftK", ElevatorLeftMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("encoderRightK", ElevatorRightMotor.getPosition().getValueAsDouble());
-
-        SmartDashboard.putNumber("elevatorPos", setpoint);
-
+        
         double output = eController.calculate(getPosition(), setpoint);
-        SmartDashboard.putNumber("elevatorPIDOutput", output);
+        
         output = limiter.calculate(MathUtil.clamp(output, -ElevatorConstants.maxVoltage, ElevatorConstants.maxVoltage)) + ElevatorConstants.feedforward;
-        SmartDashboard.putNumber("elevatorPIDOutputPlusFF", output);
-
-        SmartDashboard.putNumber("elevatorVolL", ElevatorLeftMotor.getSupplyVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("elevatorVolR", ElevatorRightMotor.getSupplyVoltage().getValueAsDouble());
-
-        SmartDashboard.putNumber("elevatorVelocity", ElevatorLeftMotor.getVelocity().getValueAsDouble());
-
-        SmartDashboard.putBoolean("IRDetector", IRDetector.get());
         
         if(IRDetector.get() && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             zero();
