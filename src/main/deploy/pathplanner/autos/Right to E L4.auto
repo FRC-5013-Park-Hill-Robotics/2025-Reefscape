@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center to H"
+                  "pathName": "Right to E"
                 }
               }
             ]
@@ -26,7 +26,26 @@
         {
           "type": "named",
           "data": {
-            "name": "Outake"
+            "name": "OutakeAuto"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E to Starting Right"
+                }
+              }
+            ]
           }
         }
       ]
