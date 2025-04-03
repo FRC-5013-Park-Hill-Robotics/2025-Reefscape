@@ -6,6 +6,7 @@
     "New Folder"
   ],
   "autoFolders": [
+    "New Folder",
     "Test Autos"
   ],
   "defaultMaxVel": 5.45,
@@ -32,7 +33,5 @@
   "brModuleY": -0.229,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": [
-    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.45,\"y\":0.2},\"end\":{\"x\":0.45,\"y\":-0.2},\"strokeWidth\":0.02}}"
-  ]
+  "robotFeatures": []
 }

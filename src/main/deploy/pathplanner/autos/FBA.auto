@@ -5,195 +5,147 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "L4Auto"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Start to F"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outake"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start to F"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Wait0.5"
+            "name": "OutakeAuto"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "F to RCoral"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop"
+            "name": "IntakeAuto"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RCoral to B"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Load"
+            "name": "OutakeAuto"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "F to RCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B to RCoral"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop"
+            "name": "IntakeAuto"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4Auto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RCoral to A"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "L4Auto"
+            "name": "OutakeAuto"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "RCoral to B"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Load"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "B to RCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L4Auto"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RCoral to A"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Load"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "A to RCoral"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A to RCoral"
+                }
+              }
+            ]
           }
         }
       ]
