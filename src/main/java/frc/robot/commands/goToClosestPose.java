@@ -57,26 +57,27 @@ public class goToClosestPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("PoseGoalX", mTarget.getX());
-    SmartDashboard.putNumber("PoseGoalY", mTarget.getY());
-    SmartDashboard.putNumber("PoseGoalH", mTarget.getRotation().getDegrees());
+    // SmartDashboard.putNumber("PoseGoalX", mTarget.getX());
+    // SmartDashboard.putNumber("PoseGoalY", mTarget.getY());
+    // SmartDashboard.putNumber("PoseGoalH", mTarget.getRotation().getDegrees());
 
     double ErrorX = m_drivetrain.getState().Pose.getX() - mTarget.getX();
     double ErrorY = m_drivetrain.getState().Pose.getY() - mTarget.getY();
     double ErrorH = m_drivetrain.getState().Pose.getRotation().minus(mTarget.getRotation()).getDegrees();
 
-    SmartDashboard.putNumber("PoseErrorX", ErrorX);
-    SmartDashboard.putNumber("PoseErrorY", ErrorY);
-    SmartDashboard.putNumber("PoseErrorH", ErrorH);
+    // SmartDashboard.putNumber("PoseErrorX", ErrorX);
+    // SmartDashboard.putNumber("PoseErrorY", ErrorY);
+    // SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = DriveConstants.limit;
-    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
-    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
-    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*i, DriveConstants.MaxAngularRate*i);
+    double i = DriveConstants.xyReduction;
+    double a = DriveConstants.goToPoseMaxspeeds;
+    double OutputX = i*LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*a, DriveConstants.MaxSpeed*a));
+    double OutputY = i*LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*a, DriveConstants.MaxSpeed*a));
+    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*a, DriveConstants.MaxAngularRate*a);
 
-    SmartDashboard.putNumber("PoseOutputX", OutputX);
-    SmartDashboard.putNumber("PoseOutputY", OutputY);
-    SmartDashboard.putNumber("PoseOutputH", OutputH);
+    // SmartDashboard.putNumber("PoseOutputX", OutputX);
+    // SmartDashboard.putNumber("PoseOutputY", OutputY);
+    // SmartDashboard.putNumber("PoseOutputH", OutputH);
 
     m_drivetrain.setControl(
       drive.withVelocityX(OutputX)

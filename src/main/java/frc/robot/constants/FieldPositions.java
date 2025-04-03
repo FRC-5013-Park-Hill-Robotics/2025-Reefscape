@@ -15,8 +15,8 @@ public class FieldPositions {
         return new Pose2d(17.5-input.getX(), input.getY(), input.getRotation());
     }
 
-    public static final Pose2d BlueA = new Pose2d(3.29, 3.81, Rotation2d.fromDegrees(0));
-    public static final Pose2d BlueB = new Pose2d(3.39, 3.81, Rotation2d.fromDegrees(0));
+    public static final Pose2d BlueA = new Pose2d(3.29, 4.29, Rotation2d.fromDegrees(0));
+    public static final Pose2d BlueB = new Pose2d(3.29, 3.99, Rotation2d.fromDegrees(0));
     public static final Pose2d BlueC = new Pose2d(3.73, 3.33, Rotation2d.fromDegrees(60));
     public static final Pose2d BlueD = new Pose2d(3.93, 3.12, Rotation2d.fromDegrees(60));
     public static final Pose2d BlueE = new Pose2d(5.04, 2.89, Rotation2d.fromDegrees(120));

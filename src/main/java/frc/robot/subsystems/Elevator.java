@@ -63,6 +63,8 @@ public class Elevator extends SubsystemBase {
         
         output = limiter.calculate(MathUtil.clamp(output, -ElevatorConstants.maxVoltage, ElevatorConstants.maxVoltage)) + ElevatorConstants.feedforward;
         
+        SmartDashboard.putNumber("Elevator Pos", getPosition());
+
         if(IRDetector.get() && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             zero();
         }
@@ -70,9 +72,9 @@ public class Elevator extends SubsystemBase {
         // if(stopDown.calculate(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble() > 30 && output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 /*&& Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()) < 1*/)){
         //     zero();
         // }
-        if(false){
-            setPosToCurrent();
-        }
+        // if(false){
+        //     setPosToCurrent();
+        // }
 
         suppyCurrentMessure.addMessurement(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble(), ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime());
         if(50 < suppyCurrentMessure.getAverage(ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime()) && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 ){

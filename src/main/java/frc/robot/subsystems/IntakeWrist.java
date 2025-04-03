@@ -79,7 +79,7 @@ public class IntakeWrist extends SubsystemBase {
     /** Creates a new IntakeWrist. */
     public IntakeWrist() {
         super();
-        setpointDegrees = getPosition();
+        setpointDegrees = ElevatorWristSetpoints.IW;
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
