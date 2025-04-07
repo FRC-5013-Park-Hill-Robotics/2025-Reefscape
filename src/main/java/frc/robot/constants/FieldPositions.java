@@ -7,12 +7,14 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-
+import edu.wpi.first.math.util.Units;
 
 public class FieldPositions {
-    
+    public static final double fieldLengthX = Units.inchesToMeters(690.876);
+    public static final double fieldWidthY = Units.inchesToMeters(317);
+
     public static Pose2d BlueToRedPose(Pose2d input){
-        return new Pose2d(17.5-input.getX(), input.getY(), input.getRotation());
+        return new Pose2d(fieldLengthX-input.getX(), fieldWidthY-input.getY(), input.getRotation());
     }
 
     public static final Pose2d BlueA = new Pose2d(3.29, 4.29, Rotation2d.fromDegrees(0));
@@ -40,9 +42,6 @@ public class FieldPositions {
     public static final Pose2d RedJ = BlueToRedPose(BlueJ);
     public static final Pose2d RedK = BlueToRedPose(BlueK);
     public static final Pose2d RedL = BlueToRedPose(BlueL);
-
-    public static final Pose2d RedCSL = new Pose2d(14.2, 3.8, Rotation2d.fromDegrees(180));
-    public static final Pose2d RedCSR = new Pose2d(14.2, 3.8, Rotation2d.fromDegrees(180));
     
     public static final List<Pose2d> Left = new ArrayList<Pose2d>(Arrays.asList(RedA, RedC, RedE, RedG,RedI,RedK,
                                                                                 BlueA, BlueC, BlueE, BlueG, BlueI, BlueK));

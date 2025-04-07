@@ -31,8 +31,8 @@ public class ElevatorWristSetpoints {
     public static final double L2E = -38;
     public static final double L2W = 26;
 
-    public static final double L1E = 0;
-    public static final double L1W = 0;
+    public static final double L1E = -12;
+    public static final double L1W = 10;
 
     //Intaking //Wrist Intake 15
     public static final double IE = 0;

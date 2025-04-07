@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Outake"
+            "name": "OutakeAuto"
           }
         },
         {
@@ -44,14 +44,27 @@
                 "data": {
                   "pathName": "F L2 to RCoral"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -76,7 +89,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Outake"
+            "name": "OutakeAuto"
           }
         },
         {
@@ -94,14 +107,27 @@
                 "data": {
                   "pathName": "B L2 to RCoral"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -126,7 +152,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Outake"
+            "name": "OutakeAuto"
           }
         },
         {

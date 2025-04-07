@@ -4,9 +4,14 @@
 
 package frc.robot.subsystems;
 
+import java.util.TimerTask;
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +27,12 @@ import frc.robot.trobot5013lib.led.TrobotAddressableLED;
 import frc.robot.trobot5013lib.led.TrobotAddressableLEDPattern;
 
 public class StatusLED extends SubsystemBase {
-  private TrobotAddressableLED m_AddressableLED = new TrobotAddressableLED(9, 39);
+  //private TrobotAddressableLED m_AddressableLED = new TrobotAddressableLED(0,90);
+
+  //private AddressableLED LED = new AddressableLED(0);
+  //private Spark m_LED = new Spark(2);
+  //private RevBlinkinLedDriver i;
+
 
   private String mPattern = "none";
   private TrobotAddressableLEDPattern autoPattern = new ChasePattern(new Color[] { Color.kDarkRed, Color.kBlue },
@@ -33,7 +43,7 @@ public class StatusLED extends SubsystemBase {
   private TrobotAddressableLEDPattern shuttlingPattern = new BlinkingPattern(Color.kDarkRed, 0.1);
   private TrobotAddressableLEDPattern ampPattern = new BlinkingPattern(Color.kWhite, 0.1);
   private TrobotAddressableLEDPattern duckingPattern = new BlinkingPattern(Color.kDeepPink, 0.1);
-  private TrobotAddressableLEDPattern shotReadyPatterh = new SolidColorPattern(Color.kGreen);
+  private TrobotAddressableLEDPattern shotReadyPatterh = new SolidColorPattern(Color.kAliceBlue);
   private TrobotAddressableLEDPattern hasTargetPattern = new BlinkingPattern(Color.kGreen, 0.1);
   private TrobotAddressableLEDPattern nonePattern = new BlinkingPattern(Color.kBlue, 0.1);
   private TrobotAddressableLEDPattern disabledPattern = new RainbowPattern();
@@ -52,26 +62,31 @@ public class StatusLED extends SubsystemBase {
     boolean isAutonomous = DriverStation.isAutonomous();
     double matchTime = DriverStation.getMatchTime();
 
-    if (isAutonomous && !isDisabled) {
-      if (mPattern != "Auto Police") {
-        m_AddressableLED.setPattern(autoPattern);
-      }
-      mPattern = "Auto Police";
-    } else if (!isDisabled) {
-      if (matchTime >= 18 && matchTime <= 23) {
-        if (mPattern != "Match Time") {
-          m_AddressableLED.setPattern(matchTimePattern);
-        }
-        mPattern = "Match Time";
-        SmartDashboard.putString("LED Command", mPattern);
-      } 
-    }
-    else {
-      if (mPattern != "Disabled Rainbow") {
-        m_AddressableLED.setPattern(disabledPattern);
-      }
-      mPattern = "Disabled Rainbow";
-    }
+    SmartDashboard.putString("LED", mPattern);
+
+    //m_AddressableLED.setPattern(shotReadyPatterh);
+    //m_LED.set(0.65);
+
+    // if (isAutonomous && !isDisabled) {
+    //   if (mPattern != "Auto Police") {
+    //     m_AddressableLED.setPattern(autoPattern);
+    //   }
+    //   mPattern = "Auto Police";
+    // } else if (!isDisabled) {
+    //   if (matchTime >= 18 && matchTime <= 23) {
+    //     if (mPattern != "Match Time") {
+    //       m_AddressableLED.setPattern(matchTimePattern);
+    //     }
+    //     mPattern = "Match Time";
+    //     SmartDashboard.putString("LED Command", mPattern);
+    //   } 
+    // }
+    // else {
+    //   if (mPattern != "Disabled Rainbow") {
+    //     m_AddressableLED.setPattern(disabledPattern);
+    //   }
+    //   mPattern = "Disabled Rainbow";
+    // }
     
   }
 }

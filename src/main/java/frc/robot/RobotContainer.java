@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.GamepadDrive;
 import frc.robot.commands.GoBack;
@@ -41,6 +43,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.IntakeWrist;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.StatusLED;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -70,6 +73,8 @@ public class RobotContainer {
 
     public final LimeLight frontLimeLight = new LimeLight("limelight-front", true);
     public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
+
+    //public final StatusLED LED = new StatusLED();
 
     private final SendableChooser<Command> autoChooser;
 
@@ -143,8 +148,7 @@ public class RobotContainer {
         //                 .onFalse(mIntakeWrist.setPosToCurrentC());
         
 
-        mOperator.back().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L1E)
-                        .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L1W, mElevator::atPos)));
+        mOperator.back().onTrue(mElevator.zeroC());
         mOperator.start().onTrue(frontLimeLight.setAprilTagViableC(false).alongWith(backLimeLight.setAprilTagViableC(false)));
 
         mOperator.leftTrigger(0.5).onTrue(mElevator.setPosC(ElevatorWristSetpoints.PE)
@@ -157,6 +161,11 @@ public class RobotContainer {
         mOperator.rightBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L3AE)
                             .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
+        mOperator.leftStick().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L1E)
+                            .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L1W, mElevator::atPos)));
+        mOperator.rightStick().onTrue(mElevator.setPosC(ElevatorWristSetpoints.GE)
+                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.GW)));
+
         mOperator.a().onTrue(mElevator.setPosC(ElevatorWristSetpoints.IE)
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos)));
         mOperator.x().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2E)
@@ -165,6 +174,8 @@ public class RobotContainer {
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));
         mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
+
+        new Trigger(mElevator::hasZeroed).onChange(rumbleSequence(mOperator, 0.3));
 
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -181,7 +192,7 @@ public class RobotContainer {
 
         //NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
 
-        NamedCommands.registerCommand("LoadAuto", wait10.andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos))));
+        NamedCommands.registerCommand("LoadAuto", wait15.andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos))));
         NamedCommands.registerCommand("L2Auto", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2W, mElevator::atPos)));
         NamedCommands.registerCommand("L3Auto", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));
         NamedCommands.registerCommand("L4Auto", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
@@ -190,7 +201,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
         NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
-        NamedCommands.registerCommand("IntakeAuto", (mIntakeRollers.autoIntakeCoral4AutoC()));
+        NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoral4AutoC());
         //NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
         NamedCommands.registerCommand("OutakeAuto", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed)
                                                     .andThen(wait5)
@@ -217,6 +228,25 @@ public class RobotContainer {
         SmartDashboard.putNumber("BotX", mDrivetrain.getState().Pose.getX());
         SmartDashboard.putNumber("BotY", mDrivetrain.getState().Pose.getY());
         SmartDashboard.putNumber("BotH", mDrivetrain.getState().Pose.getRotation().getDegrees());
+    }
+
+    public void setRumble(CommandXboxController controller, boolean rumble){
+        controller.getHID().setRumble(RumbleType.kBothRumble, rumble?1:0);
+    }
+
+    public Command startRumbleCommand(CommandXboxController controller) {
+        Command rumbleCommand = new InstantCommand(() -> setRumble(controller, true));
+        return rumbleCommand;
+    }
+
+    public Command stopRumbleCommand(CommandXboxController controller) {
+        Command rumbleCommand = new InstantCommand(() -> setRumble(controller, false));
+        return rumbleCommand;
+    }
+
+    public Command rumbleSequence(CommandXboxController controller, double duration) {
+        WaitCommand wait = new WaitCommand(duration);
+        return startRumbleCommand(controller).andThen(wait).andThen(stopRumbleCommand(controller));
     }
 
     public static RobotContainer getInstance(){

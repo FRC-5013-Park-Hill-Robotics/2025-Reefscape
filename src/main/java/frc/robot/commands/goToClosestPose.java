@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.math.RoundingMode;
 import java.util.List;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -41,11 +43,13 @@ public class goToClosestPose extends Command {
 
   private List<Pose2d> mArrayList;
   private Pose2d mTarget;
+  private Alliance mAlliance;
 
   /** Creates a new goToClosestPose. */
   public goToClosestPose(List<Pose2d> target) {
     m_drivetrain = RobotContainer.getInstance().getDrivetrain();
     mArrayList = target;
+    mAlliance = RobotContainer.getAlliance();
   }
 
   // Called when the command is initially scheduled.
@@ -79,10 +83,18 @@ public class goToClosestPose extends Command {
     // SmartDashboard.putNumber("PoseOutputY", OutputY);
     // SmartDashboard.putNumber("PoseOutputH", OutputH);
 
+    int x = 1;
+    if(mAlliance == Alliance.Blue){
+      x = 1;
+    }
+    if(mAlliance == Alliance.Red){
+      x = -1;
+    }
+
     m_drivetrain.setControl(
-      drive.withVelocityX(OutputX)
-                  .withVelocityY(OutputY)
-                  .withRotationalRate(OutputH)
+      drive.withVelocityX(x * OutputX)
+                  .withVelocityY(x * OutputY)
+                  .withRotationalRate(x * OutputH)
     );
   }
 
