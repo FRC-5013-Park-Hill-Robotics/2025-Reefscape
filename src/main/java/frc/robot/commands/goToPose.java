@@ -59,7 +59,7 @@ public class goToPose extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = DriveConstants.limit;
+    double i = DriveConstants.xyReduction;
     double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), i*-DriveConstants.MaxSpeed, i*DriveConstants.MaxSpeed));
     double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), i*-DriveConstants.MaxSpeed, i*DriveConstants.MaxSpeed));
     double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate, DriveConstants.MaxAngularRate);

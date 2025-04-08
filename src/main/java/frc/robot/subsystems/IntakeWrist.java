@@ -53,7 +53,7 @@ public class IntakeWrist extends SubsystemBase {
     
     //private final Elevator elevator = RobotContainer.getInstance().getElevator();
 
-    private final RevThroughBoreEncoder encoder = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO, true, Math.toRadians(-0));
+    private final RevThroughBoreEncoder encoder = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO, false, Math.toRadians(-49.5));
 
     public double setpointDegrees;
 
@@ -79,7 +79,7 @@ public class IntakeWrist extends SubsystemBase {
     /** Creates a new IntakeWrist. */
     public IntakeWrist() {
         super();
-        setpointDegrees = getPosition();
+        setpointDegrees = ElevatorWristSetpoints.IW;
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -92,7 +92,7 @@ public class IntakeWrist extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("Wrist Current", encoder.getAngle().getDegrees());
         if (this.stop == true) {
             intakeWristMotor.setControl(wristVoltageOut.withOutput(0));
         } else {

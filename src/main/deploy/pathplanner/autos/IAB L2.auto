@@ -44,14 +44,27 @@
                 "data": {
                   "pathName": "I L2 to LCoral"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -67,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LCoral to A L2"
+                  "pathName": "LCoral to A"
                 }
               }
             ]
@@ -92,16 +105,29 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A L2 to LCoral"
+                  "pathName": "A to LCoral"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -117,7 +143,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LCoral to B L2"
+                  "pathName": "LCoral to B"
                 }
               }
             ]
@@ -142,7 +168,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B L2 to LCoral"
+                  "pathName": "B to LCoral"
                 }
               }
             ]

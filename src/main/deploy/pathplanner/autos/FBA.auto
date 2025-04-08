@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Wait1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "OutakeAuto"
           }
         },
@@ -76,6 +82,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Wait1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "OutakeAuto"
           }
         },
@@ -121,6 +133,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait1"
           }
         },
         {

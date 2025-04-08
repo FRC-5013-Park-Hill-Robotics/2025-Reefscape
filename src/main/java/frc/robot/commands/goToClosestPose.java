@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.math.RoundingMode;
 import java.util.List;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
@@ -41,11 +43,13 @@ public class goToClosestPose extends Command {
 
   private List<Pose2d> mArrayList;
   private Pose2d mTarget;
+  private Alliance mAlliance;
 
   /** Creates a new goToClosestPose. */
   public goToClosestPose(List<Pose2d> target) {
     m_drivetrain = RobotContainer.getInstance().getDrivetrain();
     mArrayList = target;
+    mAlliance = RobotContainer.getAlliance();
   }
 
   // Called when the command is initially scheduled.
@@ -57,31 +61,40 @@ public class goToClosestPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("PoseGoalX", mTarget.getX());
-    SmartDashboard.putNumber("PoseGoalY", mTarget.getY());
-    SmartDashboard.putNumber("PoseGoalH", mTarget.getRotation().getDegrees());
+    // SmartDashboard.putNumber("PoseGoalX", mTarget.getX());
+    // SmartDashboard.putNumber("PoseGoalY", mTarget.getY());
+    // SmartDashboard.putNumber("PoseGoalH", mTarget.getRotation().getDegrees());
 
     double ErrorX = m_drivetrain.getState().Pose.getX() - mTarget.getX();
     double ErrorY = m_drivetrain.getState().Pose.getY() - mTarget.getY();
     double ErrorH = m_drivetrain.getState().Pose.getRotation().minus(mTarget.getRotation()).getDegrees();
 
-    SmartDashboard.putNumber("PoseErrorX", ErrorX);
-    SmartDashboard.putNumber("PoseErrorY", ErrorY);
-    SmartDashboard.putNumber("PoseErrorH", ErrorH);
+    // SmartDashboard.putNumber("PoseErrorX", ErrorX);
+    // SmartDashboard.putNumber("PoseErrorY", ErrorY);
+    // SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = DriveConstants.limit;
-    double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
-    double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
-    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*i, DriveConstants.MaxAngularRate*i);
+    double i = DriveConstants.xyReduction;
+    double a = DriveConstants.goToPoseMaxspeeds;
+    double OutputX = i*LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*a, DriveConstants.MaxSpeed*a));
+    double OutputY = i*LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*a, DriveConstants.MaxSpeed*a));
+    double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate*a, DriveConstants.MaxAngularRate*a);
 
-    SmartDashboard.putNumber("PoseOutputX", OutputX);
-    SmartDashboard.putNumber("PoseOutputY", OutputY);
-    SmartDashboard.putNumber("PoseOutputH", OutputH);
+    // SmartDashboard.putNumber("PoseOutputX", OutputX);
+    // SmartDashboard.putNumber("PoseOutputY", OutputY);
+    // SmartDashboard.putNumber("PoseOutputH", OutputH);
+
+    int x = 1;
+    if(mAlliance == Alliance.Blue){
+      x = 1;
+    }
+    if(mAlliance == Alliance.Red){
+      x = -1;
+    }
 
     m_drivetrain.setControl(
-      drive.withVelocityX(OutputX)
-                  .withVelocityY(OutputY)
-                  .withRotationalRate(OutputH)
+      drive.withVelocityX(x * OutputX)
+                  .withVelocityY(x * OutputY)
+                  .withRotationalRate(x * OutputH)
     );
   }
 

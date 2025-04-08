@@ -7,5 +7,6 @@ public class ElevatorConstants {
     public static final double UpperHardLimit = -160; 
 
     public static final double feedforward = -0.3441;
-    public static final double maxVoltage = 8;
+    public static final double maxVoltageUp = 8;
+    public static final double maxVoltageDown = 10;
 }

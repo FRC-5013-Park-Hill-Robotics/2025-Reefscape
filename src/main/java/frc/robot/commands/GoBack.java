@@ -87,7 +87,7 @@ public class GoBack extends Command {
     SmartDashboard.putNumber("PoseErrorY", ErrorY);
     SmartDashboard.putNumber("PoseErrorH", ErrorH);
 
-    double i = DriveConstants.limit;
+    double i = DriveConstants.xyReduction;
     double OutputX = LimiterX.calculate(MathUtil.clamp(ControllerX.calculate(ErrorX), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
     double OutputY = LimiterY.calculate(MathUtil.clamp(ControllerY.calculate(ErrorY), -DriveConstants.MaxSpeed*i, DriveConstants.MaxSpeed*i));
     double OutputH = MathUtil.clamp(ControllerH.calculate(ErrorH), -DriveConstants.MaxAngularRate, DriveConstants.MaxAngularRate);

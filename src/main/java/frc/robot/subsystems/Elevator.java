@@ -40,6 +40,8 @@ public class Elevator extends SubsystemBase {
 
     private double setpoint = 0;
 
+    private boolean zeroed = false;
+
     public Elevator(){
         super();
 
@@ -58,21 +60,23 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
         double output = eController.calculate(getPosition(), setpoint);
         
-        output = limiter.calculate(MathUtil.clamp(output, -ElevatorConstants.maxVoltage, ElevatorConstants.maxVoltage)) + ElevatorConstants.feedforward;
+        output = limiter.calculate(MathUtil.clamp(output, -ElevatorConstants.maxVoltageUp, ElevatorConstants.maxVoltageDown)) + ElevatorConstants.feedforward;
         
-        if(IRDetector.get() && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
+        SmartDashboard.putBoolean("IR Detector", IRDetector.get());
+        SmartDashboard.putNumber("Elevator Pos", getPosition());
+
+        if(getPosition() > -2 && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             zero();
         }
         //Going down resets encoder WHEN current high & going down & low velocity
         // if(stopDown.calculate(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble() > 30 && output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 /*&& Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()) < 1*/)){
         //     zero();
         // }
-        if(false){
-            setPosToCurrent();
-        }
+        // if(false){
+        //     setPosToCurrent();
+        // }
 
         suppyCurrentMessure.addMessurement(ElevatorLeftMotor.getSupplyCurrent().getValueAsDouble(), ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime());
         if(50 < suppyCurrentMessure.getAverage(ElevatorLeftMotor.getSupplyCurrent().getTimestamp().getTime()) && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2 ){
@@ -116,7 +120,12 @@ public class Elevator extends SubsystemBase {
     public void zero(){
         ElevatorLeftMotor.setPosition(0);
         ElevatorRightMotor.setPosition(0);
-        setpoint = -0.1;  
+        setpoint = -0.05;  
+        zeroed = (zeroed)?false:true;
+    }
+
+    public boolean hasZeroed(){
+        return zeroed;
     }
 
     public Command waitUntilAtPosC() {

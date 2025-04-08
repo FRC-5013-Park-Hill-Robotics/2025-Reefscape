@@ -103,19 +103,21 @@ public class IntakeRollers extends SubsystemBase {
     }
 
     public Command autoIntakeCoralC(){
+        WaitCommand wait5 = new WaitCommand(0.5);
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
-                //.andThen(() -> setTarget(-IntakeConstants.IntakeCoralSpeed))
-                //.
+                //.withTimeout(3)
+                .andThen(() -> setTarget(-15))
+                .andThen(wait5)
                 .andThen(() -> setTarget(0));
-    }
+    }    
 
     public Command autoIntakeCoral4AutoC(){
         WaitCommand wait5 = new WaitCommand(0.5);
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
-                .withTimeout(3)
-                .andThen(() -> setTargetC(-10))
+                .withTimeout(5)
+                .andThen(() -> setTarget(-15))
                 .andThen(wait5)
                 .andThen(() -> setTarget(0));
     }    

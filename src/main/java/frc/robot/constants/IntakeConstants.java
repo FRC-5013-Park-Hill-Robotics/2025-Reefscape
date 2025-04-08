@@ -48,7 +48,7 @@ public final class IntakeConstants {
     public static final double IntakeCoralSpeed = 60;
     public static final double IntakeAlgaeSpeed = 60;
     public static final double HoldAlgaeSpeed = 0.1;
-    public static final double OutakeSpeed = 180;
+    public static final double OutakeSpeed = 120;
 
     //When the wrist could potentially slam into the to of the elevator
     public static final double DangerZoneEUpper = -100;
