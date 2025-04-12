@@ -113,8 +113,10 @@ public class RobotContainer {
 
         mDrivetrain.setDefaultCommand(new GamepadDrive(mDriver));
 
-        mDriver.leftBumper().whileTrue(new goToClosestPose(FieldPositions.Left));
-        mDriver.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Right));
+        mDriver.leftBumper().whileTrue(new goToClosestPose(FieldPositions.Left).unless(mDriver.rightBumper()::getAsBoolean));
+        mDriver.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Right).unless(mDriver.leftBumper()::getAsBoolean));
+
+        mDriver.rightBumper().whileTrue(new goToClosestPose(FieldPositions.Center).onlyIf(mDriver.leftBumper()::getAsBoolean));
 
         // reset the field-centric heading on left bumper press
         mDriver.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
@@ -175,7 +177,7 @@ public class RobotContainer {
         mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
 
-        new Trigger(mElevator::hasZeroed).onChange(rumbleSequence(mOperator, 0.3));
+        new Trigger(mElevator::hasZeroed).onChange(rumbleSequence(mOperator, 0.5));
 
         //drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -194,7 +196,9 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("LoadAuto", wait15.andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos))));
         NamedCommands.registerCommand("L2Auto", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2W, mElevator::atPos)));
+        NamedCommands.registerCommand("L2AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2AW, mElevator::atPos)));
         NamedCommands.registerCommand("L3Auto", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));
+        NamedCommands.registerCommand("L3AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3AW, mElevator::atPos)));
         NamedCommands.registerCommand("L4Auto", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
         NamedCommands.registerCommand("WaitUntilElevatorAtPos", mElevator.waitUntilAtPosC());
         
@@ -202,6 +206,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
         NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoral4AutoC());
+        NamedCommands.registerCommand("IntakeAlgae", mIntakeRollers.autoIntakeAlgaeC());
         //NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
         NamedCommands.registerCommand("OutakeAuto", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed)
                                                     .andThen(wait5)

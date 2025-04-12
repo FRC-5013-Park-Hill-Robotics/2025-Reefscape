@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.AngleUnit;
@@ -20,6 +21,7 @@ import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,8 +30,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.trobot5013lib.AverageOverTime;
+import com.playingwithfusion.TimeOfFlight;
 
 import static edu.wpi.first.units.Units.Volts;
+
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -38,6 +42,11 @@ public class IntakeRollers extends SubsystemBase {
 
     // TODO Create motor controller of type TalonFx musing the can constants for the id
     private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
+    
+    private TimeOfFlight timeOfFlight = new TimeOfFlight(0);
+    private AverageOverTime ToFAoT = new AverageOverTime(0.05);
+    //private Debouncer ToFDebouncer = new Debouncer(0.1);
+    
     private double target = 0;
     private SlewRateLimiter limiter = new SlewRateLimiter(400);
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
@@ -64,9 +73,14 @@ public class IntakeRollers extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_VelocityVoltage.withVelocity(limiter.calculate(target));
+        m_VelocityVoltage.withVelocity(target);
         intakeRollerMotor.setControl(m_VelocityVoltage);
         
+        ToFAoT.addMessurement(timeOfFlight.getRange(), Timer.getFPGATimestamp());
+        
+        SmartDashboard.putNumber("ToF", timeOfFlight.getRange());
+        SmartDashboard.putNumber("ToFAoT", ToFAoT.getAverage(Timer.getFPGATimestamp()));
+
         mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
         mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
     }
@@ -84,7 +98,7 @@ public class IntakeRollers extends SubsystemBase {
     }
 
     public Boolean hasCoral() {
-        if(mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar){
+        if(ToFAoT.getAverage(Timer.getFPGATimestamp()) < IntakeConstants.ToFHasCorral){
             return true;
         }
         return false;
@@ -107,8 +121,8 @@ public class IntakeRollers extends SubsystemBase {
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
                 //.withTimeout(3)
-                .andThen(() -> setTarget(-15))
-                .andThen(wait5)
+                // .andThen(() -> setTarget(-15))
+                // .andThen(wait5)
                 .andThen(() -> setTarget(0));
     }    
 
@@ -117,8 +131,8 @@ public class IntakeRollers extends SubsystemBase {
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
                 .withTimeout(5)
-                .andThen(() -> setTarget(-15))
-                .andThen(wait5)
+                // .andThen(() -> setTarget(-15))
+                // .andThen(wait5)
                 .andThen(() -> setTarget(0));
     }    
 

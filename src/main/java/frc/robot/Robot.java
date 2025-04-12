@@ -78,8 +78,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    //checkUpdateAlliance();
-    
+    checkUpdateAlliance();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -95,7 +94,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    //checkUpdateAlliance();
+    checkUpdateAlliance();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -118,14 +117,14 @@ public class Robot extends TimedRobot {
   @Override
   public void testExit() {}
 
-  // private void checkUpdateAlliance() {
-  //   Optional<Alliance> alliance = DriverStation.getAlliance();
-  //   if (DriverStation.isDSAttached() && alliance.isPresent()) {
-  //     LimeLight frontLL = m_robotContainer.getFrontLimeLight();
-  //     LimeLight backLL = m_robotContainer.getBackLimeLight();
-  //     frontLL.setAlliance(alliance.get());
-  //     backLL.setAlliance(alliance.get());
-  //     RobotContainer.setAlliance(alliance.get());
-  //   }
-  // }
+  private void checkUpdateAlliance() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if (DriverStation.isDSAttached() && alliance.isPresent()) {
+      // LimeLight frontLL = m_robotContainer.getFrontLimeLight();
+      // LimeLight backLL = m_robotContainer.getBackLimeLight();
+      // frontLL.setAlliance(alliance.get());
+      // backLL.setAlliance(alliance.get());
+      RobotContainer.setAlliance(alliance.get());
+    }
+  }
 }
