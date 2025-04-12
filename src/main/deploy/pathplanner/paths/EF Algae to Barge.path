@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2305222602739723,
-        "y": 3.777076198630137
+        "x": 5.1268110236220465,
+        "y": 2.947125984251968
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.755,
-        "y": 3.8729921259842515
+        "x": 5.859212598425197,
+        "y": 1.2612204724409457
       },
       "isLocked": false,
-      "linkedName": "B"
+      "linkedName": "EF Algae"
     },
     {
       "anchor": {
-        "x": 1.1269263698630136,
-        "y": 0.7118364726027392
+        "x": 7.821496062992126,
+        "y": 5.130511811023622
       },
       "prevControl": {
-        "x": 1.6369759019369408,
-        "y": 1.580908228319779
+        "x": 6.094133858267717,
+        "y": 5.503622047244094
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Coral"
+      "linkedName": "Barge Right"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.74616226255522
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 120.96375653207352
   },
   "useDefaultConstraints": true
 }
