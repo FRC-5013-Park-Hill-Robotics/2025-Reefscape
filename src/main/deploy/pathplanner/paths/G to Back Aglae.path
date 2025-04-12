@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0219332627443265,
-        "y": 3.9953752656012695
+        "x": 6.218503937007874,
+        "y": 3.8177165354330707
       },
       "isLocked": false,
       "linkedName": "G"
@@ -20,12 +20,12 @@
         "y": 4.025
       },
       "prevControl": {
-        "x": 6.021240936835381,
-        "y": 4.148608262094221
+        "x": 7.213464566929134,
+        "y": 4.011181102362205
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "G to Back Aglae"
     }
   ],
   "rotationTargets": [],

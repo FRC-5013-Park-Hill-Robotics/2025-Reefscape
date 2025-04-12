@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2305222602739723,
-        "y": 3.777076198630137
+        "x": 7.821496062992126,
+        "y": 5.130511811023622
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.755,
-        "y": 3.8729921259842515
+        "x": 7.3240157480314965,
+        "y": 5.724724409448819
       },
       "isLocked": false,
-      "linkedName": "B"
+      "linkedName": "Barge Right"
     },
     {
       "anchor": {
-        "x": 1.1269263698630136,
-        "y": 0.7118364726027392
+        "x": 5.1268110236220465,
+        "y": 5.116692913385826
       },
       "prevControl": {
-        "x": 1.6369759019369408,
-        "y": 1.580908228319779
+        "x": 5.942125984251968,
+        "y": 6.401850393700787
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Coral"
+      "linkedName": "ji Algae"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.74616226255522
+    "rotation": -119.74488129694218
   },
   "reversed": false,
   "folder": null,
