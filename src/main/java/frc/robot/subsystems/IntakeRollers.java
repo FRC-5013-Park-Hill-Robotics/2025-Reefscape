@@ -57,7 +57,8 @@ public class IntakeRollers extends SubsystemBase {
     private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.15, 35);
 
     private Boolean ToFCooked = false;
-    private Debouncer ToFCookedDebouncer = new Debouncer(2.5);
+    private double lastSavedToF = 0;
+    private Debouncer ToFCookedDebouncer = new Debouncer(1);
 
     public IntakeRollers() {
         super();
@@ -81,8 +82,13 @@ public class IntakeRollers extends SubsystemBase {
         m_VelocityVoltage.withVelocity(target);
         intakeRollerMotor.setControl(m_VelocityVoltage);
         
-        if(ToFCookedDebouncer.calculate(timeOfFlight.getRange() == 0.0)){
+        //ToF Cooked Used in HasCoral Function
+        if(ToFCookedDebouncer.calculate(ToFAoT.getAverage(Timer.getFPGATimestamp()) == lastSavedToF)){
             ToFCooked = true;
+        }
+        else{
+            ToFCooked = false;
+            lastSavedToF = ToFAoT.getAverage(Timer.getFPGATimestamp());
         }
 
         ToFAoT.addMessurement(timeOfFlight.getRange(), Timer.getFPGATimestamp());
