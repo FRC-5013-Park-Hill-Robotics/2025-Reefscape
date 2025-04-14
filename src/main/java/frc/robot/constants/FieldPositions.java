@@ -14,7 +14,7 @@ public class FieldPositions {
     public static final double fieldWidthY = Units.inchesToMeters(317);
 
     public static Pose2d BlueToRedPose(Pose2d input){
-        return new Pose2d(fieldLengthX-input.getX(), fieldWidthY-input.getY(), input.getRotation()/*.minus(Rotation2d.fromDegrees(180))*/);
+        return new Pose2d(fieldLengthX-input.getX(), fieldWidthY-input.getY(), input.getRotation().minus(Rotation2d.fromDegrees(180)));
     }
 
     public static Pose2d CenterPose(Pose2d pos1, Pose2d pos2){

@@ -15,8 +15,8 @@ public class ElevatorWristSetpoints {
     public static final double L2AE_P2 = -30; 
     public static final double L2AW_P2 = 88; 
 
-    public static final double L3AE = -48; 
-    public static final double L3AW = 64; 
+    public static final double L3AE = -62; 
+    public static final double L3AW = 88; 
 
     public static final double L3AE_P2 = -30; 
     public static final double L3AW_P2 = 88; 
@@ -24,7 +24,7 @@ public class ElevatorWristSetpoints {
     public static final double PE = -8; //0
     public static final double PW = 130; //114
 
-    public static final double BE = -148;
+    public static final double BE = -146;
     public static final double BW = 88;
 
     //Coral

@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -30,7 +30,7 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "G to Back Aglae"
+                  "pathName": "G to 4Pre"
                 }
               }
             ]
@@ -73,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Algae to Back Right Algae"
+                  "pathName": "4 to 3"
                 }
               }
             ]
@@ -98,7 +98,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Right Algae to Back Left Algae"
+                  "pathName": "3 to 5"
                 }
               }
             ]
@@ -117,7 +117,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Left Algae Removal"
+                  "pathName": "5 Removal"
                 }
               },
               {

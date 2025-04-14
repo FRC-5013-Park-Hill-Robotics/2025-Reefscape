@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -26,23 +26,36 @@
         {
           "type": "named",
           "data": {
-            "name": "L4Auto"
+            "name": "OutakeAuto2"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "L2A"
+                  "pathName": "H to 4 Pre"
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "H to Back Algae"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L2A"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -51,23 +64,55 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeAlgae"
+            "name": "WaitUntilElevatorAtPos"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "4Pre to 4"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "L4Auto"
+                  "name": "IntakeAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Barge"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Algae to Barge"
+                  "pathName": "4 to Barge"
                 }
               }
             ]
@@ -76,11 +121,11 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "Algae"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -92,7 +137,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Barge Right to JI Algae"
+                  "pathName": "Barge to 5"
                 }
               }
             ]
@@ -105,19 +150,32 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "L4Auto"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Barge"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "JI Algae to Barge"
+                  "pathName": "5 to Barge"
                 }
               }
             ]
@@ -126,11 +184,11 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "Algae"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -142,7 +200,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Barge to EF Algae"
+                  "pathName": "Barge to 3"
                 }
               }
             ]
@@ -155,13 +213,26 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "L4Auto"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Barge"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -171,6 +242,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algae"
           }
         }
       ]

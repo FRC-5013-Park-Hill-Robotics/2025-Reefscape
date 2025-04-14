@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.1268110236220465,
-        "y": 5.116692913385826
+        "x": 5.112992125984252,
+        "y": 2.933307086614173
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.392900443540994,
-        "y": 5.531503132014436
+        "x": 5.776299212598426,
+        "y": 1.1368503937007883
       },
       "isLocked": false,
-      "linkedName": "ji Algae"
+      "linkedName": "3"
     },
     {
       "anchor": {
-        "x": 5.472283464566929,
-        "y": 5.655629921259842
+        "x": 5.983582677165355,
+        "y": 0.5150000000000011
       },
       "prevControl": {
-        "x": 5.322953622713779,
-        "y": 5.432110755696767
+        "x": 5.668776814530601,
+        "y": 1.7695371006968919
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Processor"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.745
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.745
+    "rotation": 120.25643716352927
   },
   "useDefaultConstraints": true
 }

@@ -47,6 +47,7 @@ public final class IntakeConstants {
     public static final double IntakeAlgaeSpeed = 60;
     public static final double HoldAlgaeSpeed = 0.1;
     public static final double OutakeSpeed = 120;
+    public static final double OutakeAlgaeSpeed = -180;
 
     public static final double ToFHasCorral = 50;
 

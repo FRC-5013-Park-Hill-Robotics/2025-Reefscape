@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.GamepadDrive;
 import frc.robot.commands.GoBack;
+import frc.robot.commands.IntakeOutakeCoral;
 import frc.robot.commands.PoseCommandFactory;
 import frc.robot.commands.goToClosestPose;
 import frc.robot.commands.goToPose;
@@ -121,8 +122,9 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         mDriver.back().onTrue(mDrivetrain.runOnce(() -> mDrivetrain.seedFieldCentric()));
 
-        mDriver.a().onTrue(mIntakeRollers.autoIntakeCoralC())
-                            .onFalse(mIntakeRollers.setTargetC(0));
+        mDriver.a().whileTrue(new IntakeOutakeCoral());
+        // mDriver.a().onTrue(mIntakeRollers.autoIntakeCoralC())
+        //                     .onFalse(mIntakeRollers.setTargetC(0));
         mDriver.b().onTrue(mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed))
                             .onFalse(mIntakeRollers.setTargetC(0));
         mDriver.x().onTrue(mIntakeRollers.autoIntakeAlgaeC())
@@ -183,6 +185,9 @@ public class RobotContainer {
     }
 
     public void configureAutonomousCommands() {
+        // WaitCommand wait025 = new WaitCommand(0.25);
+        // NamedCommands.registerCommand("Wait0.25", wait025);
+
         WaitCommand wait5 = new WaitCommand(0.5);
         NamedCommands.registerCommand("Wait0.5", wait5);
 
@@ -192,25 +197,35 @@ public class RobotContainer {
         WaitCommand wait15 = new WaitCommand(1.5);
         NamedCommands.registerCommand("Wait1.5", wait15);
 
-        //NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
+        Command BargeFull = mElevator.setPosC(ElevatorWristSetpoints.BE)
+                                .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.WHold))
+                                .andThen(mElevator.waitUntilAtPosC())
+                                .andThen(mIntakeWrist.setPosC(ElevatorWristSetpoints.BW))
+                                .alongWith(mIntakeRollers.outakeAlgaeC());
+
+        NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
 
         NamedCommands.registerCommand("LoadAuto", wait15.andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos))));
         NamedCommands.registerCommand("L2Auto", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2W, mElevator::atPos)));
-        NamedCommands.registerCommand("L2AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2AW, mElevator::atPos)));
+        //NamedCommands.registerCommand("L2AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2AW, mElevator::atPos)));
         NamedCommands.registerCommand("L3Auto", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));
-        NamedCommands.registerCommand("L3AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3AW, mElevator::atPos)));
+        //NamedCommands.registerCommand("L3AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3AW, mElevator::atPos)));
         NamedCommands.registerCommand("L4Auto", mElevator.setPosC(ElevatorWristSetpoints.L4E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
+        NamedCommands.registerCommand("Barge", mElevator.setPosC(ElevatorWristSetpoints.BE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.BW, mElevator::atPos)));
+        NamedCommands.registerCommand("BargeFull", BargeFull);
+        NamedCommands.registerCommand("Processor", mElevator.setPosC(ElevatorWristSetpoints.PE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.PW, mElevator::atPos)));
         NamedCommands.registerCommand("WaitUntilElevatorAtPos", mElevator.waitUntilAtPosC());
         
         NamedCommands.registerCommand("L2A", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
         NamedCommands.registerCommand("L3A", mElevator.setPosC(ElevatorWristSetpoints.L3AE).alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L3AW)));
 
         NamedCommands.registerCommand("IntakeAuto", mIntakeRollers.autoIntakeCoral4AutoC());
-        NamedCommands.registerCommand("IntakeAlgae", mIntakeRollers.autoIntakeAlgaeC());
+        NamedCommands.registerCommand("IntakeAlgae", mIntakeRollers.autoIntakeAlgae4AutoC());
+        NamedCommands.registerCommand("OutakeAuto2", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed)
+                                                                    .andThen(wait5)
+                                                                    .andThen(mIntakeRollers.setTargetC(0)));
+        NamedCommands.registerCommand("Algae", mIntakeRollers.outakeAlgaeC());
         //NamedCommands.registerCommand("Intake", mIntakeRollers.setTargetC(IntakeConstants.IntakeCoralSpeed));
-        NamedCommands.registerCommand("OutakeAuto", mIntakeRollers.setTargetC(IntakeConstants.OutakeSpeed)
-                                                    .andThen(wait5)
-                                                    .andThen(mIntakeRollers.setTargetC(0)));
     }
 
     public Command getAutonomousCommand() {
@@ -268,6 +283,10 @@ public class RobotContainer {
 
     public Elevator getElevator(){
         return mElevator;
+    }
+
+    public IntakeRollers getIntakeRollers(){
+        return mIntakeRollers;
     }
 
     public LimeLight getFrontLimeLight(){
