@@ -7,7 +7,7 @@
         {
           "type": "named",
           "data": {
-            "name": "L2"
+            "name": "L2Auto"
           }
         },
         {
@@ -19,25 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Outake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait0.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop"
+            "name": "OutakeAuto"
           }
         }
       ]

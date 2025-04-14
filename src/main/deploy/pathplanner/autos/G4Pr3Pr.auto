@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -26,23 +26,36 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "LoadAuto"
+                  "pathName": "G to 4Pre"
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "G to Back Aglae"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L2A"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -51,23 +64,55 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeAlgae"
+            "name": "WaitUntilElevatorAtPos"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "LoadAuto"
+                  "pathName": "4Pre to 4"
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Algae to Processor"
+                  "pathName": "4 to Processor"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Processor"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -76,11 +121,11 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -105,19 +150,32 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "LoadAuto"
+                  "pathName": "3 To Processor"
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "EF Algae To Processor"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Processor"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -126,13 +184,13 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Processor to JI Algae"
+            "pathName": "Processor to 5"
           }
         }
       ]

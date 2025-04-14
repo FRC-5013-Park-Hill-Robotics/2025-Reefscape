@@ -6,19 +6,25 @@ package frc.robot.constants;
 
 /** Add your docs here. */
 public class ElevatorWristSetpoints {
-    public static final double WHold = 57;
+    public static final double WHold = 62;
 
     //Algae
     public static final double L2AE = -30; 
     public static final double L2AW = 88; 
 
-    public static final double L3AE = -48; 
-    public static final double L3AW = 64; 
+    public static final double L2AE_P2 = -30; 
+    public static final double L2AW_P2 = 88; 
 
-    public static final double PE = 0;
-    public static final double PW = 114;
+    public static final double L3AE = -62; 
+    public static final double L3AW = 88; 
 
-    public static final double BE = -148;
+    public static final double L3AE_P2 = -30; 
+    public static final double L3AW_P2 = 88; 
+
+    public static final double PE = -8; //0
+    public static final double PW = 130; //114
+
+    public static final double BE = -146;
     public static final double BW = 88;
 
     //Coral
@@ -39,6 +45,6 @@ public class ElevatorWristSetpoints {
     public static final double IW = 10;
 
     //Ground Algae
-    public static final double GE = 0;
-    public static final double GW = 90;
+    public static final double GE = -8;
+    public static final double GW = 130;
 }

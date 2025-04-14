@@ -9,24 +9,18 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Start to I"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "L4Auto"
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start to I"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait1"
           }
         },
         {
@@ -50,14 +44,27 @@
                 "data": {
                   "name": "LoadAuto"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -82,12 +89,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "OutakeAuto"
           }
         },
@@ -106,14 +107,27 @@
                 "data": {
                   "name": "LoadAuto"
                 }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -138,12 +152,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "OutakeAuto"
           }
         },
@@ -161,6 +169,25 @@
                 "type": "named",
                 "data": {
                   "name": "LoadAuto"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
                 }
               }
             ]

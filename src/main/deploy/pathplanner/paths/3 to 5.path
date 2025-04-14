@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803937007874016,
-        "y": 4.025
+        "x": 5.112992125984252,
+        "y": 2.933307086614173
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.06215220786542,
-        "y": 4.223250034635955
+        "x": 6.038858267716535,
+        "y": -0.13448818897637693
       },
       "isLocked": false,
-      "linkedName": "G to Back Aglae"
+      "linkedName": "3"
     },
     {
       "anchor": {
-        "x": 7.821496062992126,
-        "y": 5.130511811023622
+        "x": 5.118485915492958,
+        "y": 5.0879401408450695
       },
       "prevControl": {
-        "x": 6.851269247023592,
-        "y": 4.977411400397566
+        "x": 7.467698513918155,
+        "y": 8.266286597537984
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Barge Right"
+      "linkedName": "5"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -119.74488129694218
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 120.25643716352927
   },
   "useDefaultConstraints": true
 }

@@ -26,12 +26,6 @@
         {
           "type": "named",
           "data": {
-            "name": "WaitUntilElevatorAtPos"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "OutakeAuto"
           }
         },
@@ -42,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "G to Back Aglae"
+                  "pathName": "G to 4Pre"
                 }
               },
               {

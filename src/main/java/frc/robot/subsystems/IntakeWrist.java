@@ -50,9 +50,6 @@ import java.util.function.Supplier;
 public class IntakeWrist extends SubsystemBase {
 
     private final TalonFX intakeWristMotor = new TalonFX(CANConstants.INTAKE_WRIST_ID, CANConstants.CANBUS_ELEVATOR);
-    
-    //private final Elevator elevator = RobotContainer.getInstance().getElevator();
-
     private final RevThroughBoreEncoder encoder = new RevThroughBoreEncoder(CANConstants.WRIST_ENCODER_DIO, false, Math.toRadians(-49.5));
 
     public double setpointDegrees;
@@ -93,6 +90,7 @@ public class IntakeWrist extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Wrist Current", encoder.getAngle().getDegrees());
+        SmartDashboard.putNumber("Wrist Setpoint", setpointDegrees);
         if (this.stop == true) {
             intakeWristMotor.setControl(wristVoltageOut.withOutput(0));
         } else {

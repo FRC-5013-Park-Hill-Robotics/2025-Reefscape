@@ -38,10 +38,8 @@ public final class IntakeConstants {
        
     }
 
-    public static final double MEUpLowerLimit = 0; //Motor Encoder range for Up (so we don't hit the top of elevator)
-    public static final double MEUpUpperLimit = 0; //Motor Encoder range for Up (so we don't hit the top of elevator)
     public static final double feedforwardMod = -0.38;
-    public static final double maxVoltage = 3;
+    public static final double maxVoltage = 5;
 
     public static final double HasCoralBar = 2.8;
     public static final double hasAlgaeBar = 10;
@@ -49,11 +47,8 @@ public final class IntakeConstants {
     public static final double IntakeAlgaeSpeed = 60;
     public static final double HoldAlgaeSpeed = 0.1;
     public static final double OutakeSpeed = 120;
+    public static final double OutakeAlgaeSpeed = -180;
 
-    //When the wrist could potentially slam into the to of the elevator
-    public static final double DangerZoneEUpper = -100;
-    public static final double DangerZoneELower = -80;
-    public static final double DangerZoneWRange = 40;
-    public static final double DangerZoneWSetpoint = 40;
+    public static final double ToFHasCorral = 50;
 
 }

@@ -49,13 +49,13 @@ public class goToClosestPose extends Command {
   public goToClosestPose(List<Pose2d> target) {
     m_drivetrain = RobotContainer.getInstance().getDrivetrain();
     mArrayList = target;
-    mAlliance = RobotContainer.getAlliance();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     mTarget = m_drivetrain.getState().Pose.nearest(mArrayList);
+    mAlliance = RobotContainer.getAlliance();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -94,7 +94,7 @@ public class goToClosestPose extends Command {
     m_drivetrain.setControl(
       drive.withVelocityX(x * OutputX)
                   .withVelocityY(x * OutputY)
-                  .withRotationalRate(x * OutputH)
+                  .withRotationalRate(OutputH)
     );
   }
 

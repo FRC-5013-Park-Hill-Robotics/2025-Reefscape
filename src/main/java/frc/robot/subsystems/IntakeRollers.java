@@ -10,7 +10,9 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.units.AngleUnit;
@@ -20,6 +22,7 @@ import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,8 +31,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.CANConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.trobot5013lib.AverageOverTime;
+import com.playingwithfusion.TimeOfFlight;
 
 import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.BooleanSupplier;
+
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -38,12 +45,19 @@ public class IntakeRollers extends SubsystemBase {
 
     // TODO Create motor controller of type TalonFx musing the can constants for the id
     private TalonFX intakeRollerMotor = new TalonFX(IntakeConstants.INTAKE_ROLLER_ID, CANConstants.CANBUS_ELEVATOR);
+    
+    private TimeOfFlight timeOfFlight = new TimeOfFlight(0);
+    private AverageOverTime ToFAoT = new AverageOverTime(0.05);
+    
     private double target = 0;
     private SlewRateLimiter limiter = new SlewRateLimiter(400);
     //private ArmFeedforward m_intakFeedforward = new ArmFeedforward(0, 0, 0);
     private VelocityVoltage m_VelocityVoltage = new VelocityVoltage(0);
     private AverageOverTime mCurrentAvgCoral = new AverageOverTime(0.35, 5);
     private AverageOverTime mCurrentAvgAlgae = new AverageOverTime(0.15, 35);
+
+    private Boolean ToFCooked = false;
+    private Debouncer ToFCookedDebouncer = new Debouncer(2.5);
 
     public IntakeRollers() {
         super();
@@ -64,9 +78,19 @@ public class IntakeRollers extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_VelocityVoltage.withVelocity(limiter.calculate(target));
+        m_VelocityVoltage.withVelocity(target);
         intakeRollerMotor.setControl(m_VelocityVoltage);
         
+        if(ToFCookedDebouncer.calculate(timeOfFlight.getRange() == 0.0)){
+            ToFCooked = true;
+        }
+
+        ToFAoT.addMessurement(timeOfFlight.getRange(), Timer.getFPGATimestamp());
+        
+        SmartDashboard.putNumber("ToF", timeOfFlight.getRange());
+        SmartDashboard.putNumber("ToFAoT", ToFAoT.getAverage(Timer.getFPGATimestamp()));
+        SmartDashboard.putBoolean("ToFWorking?", !ToFCooked);
+
         mCurrentAvgCoral.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
         mCurrentAvgAlgae.addMessurement(intakeRollerMotor.getSupplyCurrent().getValueAsDouble(), intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime());
     }
@@ -79,12 +103,24 @@ public class IntakeRollers extends SubsystemBase {
         target = targetSpeed;
     }
 
+    public void setTarget(double targetSpeed, double elseSpeed, BooleanSupplier suppy){
+        if (suppy.getAsBoolean()) {
+            target = elseSpeed;
+        }
+        else{
+            target = targetSpeed;
+        }
+    }
+
     public void incrementRollers(double amount){
         target += amount;
     }
 
     public Boolean hasCoral() {
-        if(mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar){
+        if(ToFCooked && mCurrentAvgCoral.getAverage(intakeRollerMotor.getSupplyCurrent().getTimestamp().getTime()) > IntakeConstants.HasCoralBar){
+            return true;
+        }
+        if((!ToFCooked) && ToFAoT.getAverage(Timer.getFPGATimestamp()) < IntakeConstants.ToFHasCorral){
             return true;
         }
         return false;
@@ -103,30 +139,66 @@ public class IntakeRollers extends SubsystemBase {
     }
 
     public Command autoIntakeCoralC(){
-        WaitCommand wait5 = new WaitCommand(0.5);
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
                 //.withTimeout(3)
-                .andThen(() -> setTarget(-15))
-                .andThen(wait5)
+                // .andThen(() -> setTarget(-15))
+                // .andThen(wait5)
+                .andThen(() -> setTarget(0));
+    }    
+    
+    public Command autoIntakeOutakeCoralC(){
+        return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
+                .until(this::hasCoral)
+                //.withTimeout(3)
+                // .andThen(() -> setTarget(-15))
+                // .andThen(wait5)
                 .andThen(() -> setTarget(0));
     }    
 
     public Command autoIntakeCoral4AutoC(){
-        WaitCommand wait5 = new WaitCommand(0.5);
         return run(() -> setTarget(IntakeConstants.IntakeCoralSpeed))
                 .until(this::hasCoral)
                 .withTimeout(5)
-                .andThen(() -> setTarget(-15))
-                .andThen(wait5)
+                // .andThen(() -> setTarget(-15))
+                // .andThen(wait5)
                 .andThen(() -> setTarget(0));
     }    
 
     public Command autoIntakeAlgaeC(){
+        return run(() -> setTarget(IntakeConstants.IntakeAlgaeSpeed));
+                // .until(this::hasAlgae)
+                // .withTimeout(3)
+                // .andThen(() -> setTarget(IntakeConstants.HoldAlgaeSpeed));
+    }
+
+    public Command autoIntakeAlgae4AutoC(){
+        WaitCommand wait5 = new WaitCommand(0.5);
         return run(() -> setTarget(IntakeConstants.IntakeAlgaeSpeed))
                 .until(this::hasAlgae)
+                .withTimeout(3)
+                .andThen(wait5)
                 .andThen(() -> setTarget(IntakeConstants.HoldAlgaeSpeed));
     }
+
+    public Command autoOutakeC(){
+        WaitCommand wait5 = new WaitCommand(0.5);
+        NamedCommands.registerCommand("Wait0.5", wait5);
+        Command result = runOnce(() -> setTarget(IntakeConstants.OutakeSpeed))
+                                .andThen(wait5)
+                                .andThen(runOnce(() -> setTarget(0)));
+        return result;
+    }
+
+    public Command outakeAlgaeC(){
+        WaitCommand wait5 = new WaitCommand(0.5);
+        NamedCommands.registerCommand("Wait0.5", wait5);
+        Command result = runOnce(() -> setTarget(IntakeConstants.OutakeAlgaeSpeed))
+                                .andThen(wait5)
+                                .andThen(runOnce(() -> setTarget(0)));
+        return result;
+    }
+
 
     public Command setTargetC(double targetSpeed){
         Command result = runOnce(() -> setTarget(targetSpeed));
