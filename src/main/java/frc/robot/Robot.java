@@ -44,9 +44,8 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchNumber());
-    SmartDashboard.putNumber("Pose Red A X", FieldPositions.RedA.getX());
-    SmartDashboard.putNumber("Pose Red A Y", FieldPositions.RedA.getY());
     m_robotContainer.updateField(); //For updating the smartdashboard field display
+    checkUpdateAlliance();
   }
 
   @Override
@@ -78,7 +77,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    checkUpdateAlliance();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -94,7 +92,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    checkUpdateAlliance();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -124,7 +121,7 @@ public class Robot extends TimedRobot {
       // LimeLight backLL = m_robotContainer.getBackLimeLight();
       // frontLL.setAlliance(alliance.get());
       // backLL.setAlliance(alliance.get());
-      RobotContainer.setAlliance(alliance.get());
+      m_robotContainer.setAlliance(alliance.get());
     }
   }
 }
