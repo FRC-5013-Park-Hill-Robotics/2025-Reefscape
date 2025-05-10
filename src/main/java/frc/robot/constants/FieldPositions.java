@@ -21,18 +21,18 @@ public class FieldPositions {
         return new Pose2d((pos1.getX()+pos2.getX())/2, (pos1.getY()+pos2.getY())/2, pos1.getRotation());
     }
 
-    public static final Pose2d BlueA = new Pose2d(3.29, 4.29, Rotation2d.fromDegrees(0));
-    public static final Pose2d BlueB = new Pose2d(3.29, 3.99, Rotation2d.fromDegrees(0));
-    public static final Pose2d BlueC = new Pose2d(3.73, 3.33, Rotation2d.fromDegrees(60));
-    public static final Pose2d BlueD = new Pose2d(3.93, 3.12, Rotation2d.fromDegrees(60));
-    public static final Pose2d BlueE = new Pose2d(5.04, 2.89, Rotation2d.fromDegrees(120));
-    public static final Pose2d BlueF = new Pose2d(5.35, 3.14, Rotation2d.fromDegrees(120));
-    public static final Pose2d BlueG = new Pose2d(5.77, 3.99, Rotation2d.fromDegrees(-180));
-    public static final Pose2d BlueH = new Pose2d(5.76, 4.29, Rotation2d.fromDegrees(-180));
-    public static final Pose2d BlueI = new Pose2d(5.37, 5.03, Rotation2d.fromDegrees(-120));
-    public static final Pose2d BlueJ = new Pose2d(5.03, 5.23, Rotation2d.fromDegrees(-120));
-    public static final Pose2d BlueK = new Pose2d(4.12, 5.27, Rotation2d.fromDegrees(-60));
-    public static final Pose2d BlueL = new Pose2d(3.78, 5.05, Rotation2d.fromDegrees(-60));
+    public static final Pose2d BlueA = new Pose2d(3.247, 4.205, Rotation2d.fromDegrees(0));//new Pose2d(3.29, 4.29, Rotation2d.fromDegrees(0));
+    public static final Pose2d BlueB = new Pose2d(3.231, 3.777, Rotation2d.fromDegrees(0));//new Pose2d(3.29, 3.99, Rotation2d.fromDegrees(0));
+    public static final Pose2d BlueC = new Pose2d(3.696, 3.056, Rotation2d.fromDegrees(60));//new Pose2d(3.73, 3.33, Rotation2d.fromDegrees(60));
+    public static final Pose2d BlueD = new Pose2d(4.012, 2.845, Rotation2d.fromDegrees(60));//new Pose2d(3.93, 3.12, Rotation2d.fromDegrees(60));
+    public static final Pose2d BlueE = new Pose2d(4.933, 2.823, Rotation2d.fromDegrees(120));//new Pose2d(5.04, 2.89, Rotation2d.fromDegrees(120));
+    public static final Pose2d BlueF = new Pose2d(5.265, 3.016, Rotation2d.fromDegrees(120));//new Pose2d(5.35, 3.14, Rotation2d.fromDegrees(120));
+    public static final Pose2d BlueG = new Pose2d(5.754, 3.873, Rotation2d.fromDegrees(-180));//new Pose2d(5.77, 3.99, Rotation2d.fromDegrees(-180));
+    public static final Pose2d BlueH = new Pose2d(5.749, 4.205, Rotation2d.fromDegrees(-180));//new Pose2d(5.76, 4.29, Rotation2d.fromDegrees(-180));
+    public static final Pose2d BlueI = new Pose2d(5.319, 4.979, Rotation2d.fromDegrees(-120));//new Pose2d(5.37, 5.03, Rotation2d.fromDegrees(-120));
+    public static final Pose2d BlueJ = new Pose2d(4.975, 5.186, Rotation2d.fromDegrees(-120));//new Pose2d(5.03, 5.23, Rotation2d.fromDegrees(-120));
+    public static final Pose2d BlueK = new Pose2d(4.027, 5.187, Rotation2d.fromDegrees(-60));//new Pose2d(4.12, 5.27, Rotation2d.fromDegrees(-60));
+    public static final Pose2d BlueL = new Pose2d(3.687, 5.003, Rotation2d.fromDegrees(-60));//new Pose2d(3.78, 5.05, Rotation2d.fromDegrees(-60));
 
     public static final Pose2d RedA = BlueToRedPose(BlueA);
     public static final Pose2d RedB = BlueToRedPose(BlueB);
