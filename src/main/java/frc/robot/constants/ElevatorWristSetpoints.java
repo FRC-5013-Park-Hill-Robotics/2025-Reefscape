@@ -42,9 +42,9 @@ public class ElevatorWristSetpoints {
 
     //Intaking //Wrist Intake 15
     public static final double IE = 0;
-    public static final double IW = 10;
+    public static final double IW = 12;
 
     //Ground Algae
-    public static final double GE = -8;
+    public static final double GE = -10;
     public static final double GW = 130;
 }

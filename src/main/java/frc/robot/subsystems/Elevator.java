@@ -30,7 +30,8 @@ public class Elevator extends SubsystemBase {
 
     private final Follower rightFollow = new Follower(CANConstants.ELEVATOR_LEFT_ID, true);
 
-    private final PIDController eController = new PIDController(1.2, 0, 0.12);
+    private final PIDController eController = new PIDController(1.2, 0, 0.15);
+    //private final PIDController eController = new PIDController(1, 0, 0);
     private final SlewRateLimiter limiter = new SlewRateLimiter(36);
     private final Debouncer stopDown = new Debouncer(0.1);
     private final Debouncer atPosDebounce = new Debouncer(0.05);
@@ -66,6 +67,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putBoolean("IR Detector", IRDetector.get());
         SmartDashboard.putNumber("Elevator Pos", getPosition());
         SmartDashboard.putNumber("ELevator Setpoint", setpoint);
+        SmartDashboard.putNumber("Output", output);
 
         if(getPosition() > -2 && stopDown.calculate(output > 0 && Math.abs(ElevatorLeftMotor.getVelocity().getValueAsDouble()) < 0.2)){
             zero();
@@ -91,7 +93,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean atPos(){
-        if(atPosDebounce.calculate(Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()-setpoint)<1)){
+        if(atPosDebounce.calculate(Math.abs(ElevatorLeftMotor.getPosition().getValueAsDouble()-setpoint)<3)){
             return true;
         }
         else{
