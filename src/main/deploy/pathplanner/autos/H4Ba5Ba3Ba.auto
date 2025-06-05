@@ -121,7 +121,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Algae"
+            "name": "BargeFull"
           }
         },
         {
@@ -184,7 +184,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Algae"
+            "name": "BargeFull"
           }
         },
         {
@@ -247,7 +247,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Algae"
+            "name": "BargeFull"
           }
         }
       ]

@@ -70,7 +70,7 @@ public class RobotContainer {
     public final IntakeRollers mIntakeRollers = new IntakeRollers();
 
     private Field2d m_field = new Field2d();
-    private static Alliance mAlliance = Alliance.Blue; 
+    private static Alliance mAlliance = Alliance.Red; 
 
     public final LimeLight frontLimeLight = new LimeLight("limelight-front", true);
     public final LimeLight backLimeLight = new LimeLight("limelight-back", true);
@@ -157,8 +157,12 @@ public class RobotContainer {
 
         mOperator.leftTrigger(0.5).onTrue(mElevator.setPosC(ElevatorWristSetpoints.PE)
                                             .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.PW)));
+        
         mOperator.rightTrigger(0.5).onTrue(mElevator.setPosC(ElevatorWristSetpoints.BE)
-                                            .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.BW)));
+                                .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.WHold)))
+                            .onFalse(mIntakeWrist.setPosC(ElevatorWristSetpoints.BW)
+                                            .alongWith(mIntakeRollers.outakeAlgaeC()));
+            
 
         mOperator.leftBumper().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L2AE)
                             .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.L2AW)));
@@ -233,8 +237,16 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
-    public static void setAlliance(Alliance alliance){
-        mAlliance = alliance;
+    public void setAlliance(Alliance alliance){
+        if(mAlliance != alliance){
+            mAlliance = alliance;
+            if(mAlliance == Alliance.Blue){
+                mDrivetrain.resetRotation(Rotation2d.fromDegrees(180));
+            }
+            if(mAlliance == Alliance.Red){
+                mDrivetrain.resetRotation(Rotation2d.fromDegrees(0));
+            }
+        }
     }
 
     public static Alliance getAlliance(){

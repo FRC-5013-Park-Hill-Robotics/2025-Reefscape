@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 5.03007874015748,
-        "y": 1.7448818897637794
+        "y": 1.74488188976378
       },
       "isLocked": false,
       "linkedName": "Right Coral"
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.45,
+    "maxVelocity": 3.45,
     "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

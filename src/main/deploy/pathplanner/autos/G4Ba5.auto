@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "L2Auto"
+                  "pathName": "Center to G"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Start to I L2"
+                  "name": "L4Auto"
                 }
               }
             ]
@@ -34,15 +34,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "LoadAuto"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "I L2 to LCoral"
+                  "pathName": "G to 4Pre"
                 }
               },
               {
@@ -52,13 +46,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Wait1"
+                        "name": "Wait0.5"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeAuto"
+                        "name": "L2A"
                       }
                     }
                   ]
@@ -68,44 +62,38 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitUntilElevatorAtPos"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "L2Auto"
+                  "pathName": "4Pre to 4"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "LCoral to A"
+                  "name": "IntakeAlgae"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "OutakeAuto2"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "LoadAuto"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "A to LCoral"
+                  "pathName": "4 to Barge"
                 }
               },
               {
@@ -115,13 +103,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Wait1"
+                        "name": "Wait0.5"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeAuto"
+                        "name": "Barge"
                       }
                     }
                   ]
@@ -131,19 +119,38 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "BargeFull"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "L2Auto"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait0.5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L3A"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LCoral to B"
+                  "pathName": "Barge to 5"
                 }
               }
             ]
@@ -152,7 +159,7 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto2"
+            "name": "IntakeAlgae"
           }
         },
         {
@@ -160,15 +167,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "LoadAuto"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "B to LCoral"
+                  "pathName": "5 to Hold"
                 }
               }
             ]
