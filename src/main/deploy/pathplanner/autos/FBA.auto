@@ -26,13 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
@@ -50,14 +44,27 @@
                 "data": {
                   "pathName": "F to RCoral"
                 }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -82,13 +89,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
@@ -106,14 +107,27 @@
                 "data": {
                   "pathName": "B to RCoral"
                 }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wait1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeAuto"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAuto"
           }
         },
         {
@@ -138,13 +152,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {

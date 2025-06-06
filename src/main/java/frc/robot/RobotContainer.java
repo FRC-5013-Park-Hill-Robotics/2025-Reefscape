@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -182,6 +183,8 @@ public class RobotContainer {
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));
         mOperator.b().onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
                             .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
+        new Trigger(mOperator.x()::getAsBoolean).onTrue(mElevator.setPosC(ElevatorWristSetpoints.L4E)
+        .alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L4W, mElevator::atPos)));
 
         new Trigger(mElevator::hasZeroed).onChange(rumbleSequence(mOperator, 0.5));
 
@@ -195,11 +198,14 @@ public class RobotContainer {
         WaitCommand wait5 = new WaitCommand(0.5);
         NamedCommands.registerCommand("Wait0.5", wait5);
 
-        WaitCommand wait10 = new WaitCommand(1);
+        WaitCommand wait10 = new WaitCommand(1.0);
         NamedCommands.registerCommand("Wait1", wait10);
 
         WaitCommand wait15 = new WaitCommand(1.5);
         NamedCommands.registerCommand("Wait1.5", wait15);
+
+        WaitCommand wait20 = new WaitCommand(2.0);
+        NamedCommands.registerCommand("Wait2", wait20);
 
         Command BargeFull = mElevator.setPosC(ElevatorWristSetpoints.BE)
                                 .alongWith(mIntakeWrist.setPosC(ElevatorWristSetpoints.WHold))
@@ -207,9 +213,11 @@ public class RobotContainer {
                                 .andThen(mIntakeWrist.setPosC(ElevatorWristSetpoints.BW))
                                 .alongWith(mIntakeRollers.outakeAlgaeC());
 
+        Command LoadAuto = new WaitCommand(0.5).asProxy().andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos)));
+
         NamedCommands.registerCommand("MoveBack", new GoBack(0.178));
 
-        NamedCommands.registerCommand("LoadAuto", wait15.andThen(mElevator.setPosC(ElevatorWristSetpoints.IE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.IW, mElevator::atPos))));
+        NamedCommands.registerCommand("LoadAuto", LoadAuto);
         NamedCommands.registerCommand("L2Auto", mElevator.setPosC(ElevatorWristSetpoints.L2E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2W, mElevator::atPos)));
         //NamedCommands.registerCommand("L2AlgaeAuto", mElevator.setPosC(ElevatorWristSetpoints.L2AE).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L2AW, mElevator::atPos)));
         NamedCommands.registerCommand("L3Auto", mElevator.setPosC(ElevatorWristSetpoints.L3E).alongWith(mIntakeWrist.setPosFullC(ElevatorWristSetpoints.L3W, mElevator::atPos)));

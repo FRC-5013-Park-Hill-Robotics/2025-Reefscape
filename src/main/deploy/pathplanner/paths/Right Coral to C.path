@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.126926369863014,
-        "y": 0.7118364726027395
+        "x": 1.8987746018989125,
+        "y": 1.4012680556598482
       },
       "isLocked": false,
       "linkedName": "Right Coral"
@@ -20,8 +20,8 @@
         "y": 3.0558433219178083
       },
       "prevControl": {
-        "x": 3.2305222602739723,
-        "y": 2.3045590753424654
+        "x": 3.4461267605633794,
+        "y": 2.4518485915492945
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.45,
+    "maxVelocity": 2.45,
     "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start to F L2"
+                  "pathName": "Start to F"
                 }
               }
             ]
@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "F L2 to RCoral"
+                  "pathName": "F to RCoral"
                 }
               },
               {
@@ -80,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RCoral to B L2"
+                  "pathName": "RCoral to B"
                 }
               }
             ]
@@ -89,7 +89,7 @@
         {
           "type": "named",
           "data": {
-            "name": "OutakeAuto"
+            "name": "OutakeAuto2"
           }
         },
         {
@@ -105,7 +105,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B L2 to RCoral"
+                  "pathName": "B to RCoral"
                 }
               },
               {
@@ -143,7 +143,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RCoral to A L2"
+                  "pathName": "RCoral to A"
                 }
               }
             ]
